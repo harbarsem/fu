@@ -7,7 +7,7 @@ with st.echo(code_location='below'):
     """
     This is a test.
     """
-    x = np.linspace(0, 10, 500)
+    x = np.linspace(0, 10, 100)
     fig = plt.figure()
     plt.plot(x, np.sin(x))
     plt.ylim(-2, 2)
