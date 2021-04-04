@@ -34,7 +34,7 @@ with st.echo(code_location='below'):
     camera = Camera(fig)
     for year in df["year"].unique():
         sample_1 = df[(df["year"] == year) & (df["candidatevotes"] > 100000)]
-        a = sample_1.groupby("party_detailed")["candidatevotes"].sum().reindex()
+        a = sample_1.groupby("party_detailed")["candidatevotes"].sum().reindex(
         index=['DEMOCRAT', 'REPUBLICAN', "LIBERTARIAN"])
         a.plot.bar(color=['blue', 'red', 'black'])
         plt.xticks(rotation=30, horizontalalignment="center")
