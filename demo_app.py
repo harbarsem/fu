@@ -44,7 +44,7 @@ with st.echo(code_location='below'):
         camera.snap()
     animation = camera.animate(interval=200, repeat=True, repeat_delay=400)
     animation.save('dem-rep.gif')
-    st.
+    st.markdown('dem-rep.gif')
 
 
     dict_col = {'DEMOCRAT': ["Blues", "демократ!"], 'REPUBLICAN': ["Reds", "республиканец!"]}
