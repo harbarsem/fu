@@ -42,8 +42,9 @@ with st.echo(code_location='below'):
         plt.xlabel("Party", fontsize=8)
         plt.ylabel("Number of votes for a candidate from the party", fontsize=8)
         camera.snap()
+        st.pyplot()
     animation = camera.animate(interval=20)
-    st.pyplot(animation)
+
 
 
     dict_col = {'DEMOCRAT': ["Blues", "демократ!"], 'REPUBLICAN': ["Reds", "республиканец!"]}
