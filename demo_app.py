@@ -32,7 +32,8 @@ with st.echo(code_location='below'):
     a= selected_year
     for b in ['DEMOCRAT','REPUBLICAN', "LIBERTARIAN"]:
         sample = df[(df["year"] == a) & (df["party_simplified"] == b)]
-        plot1 = sample.plot(column='percentage', norm=mpl.colors.Normalize(vmin=0, vmax=1), figsize=(10, 5), legend=True,
+        plot1 = plt.figure()
+        sample.plot(column='percentage', norm=mpl.colors.Normalize(vmin=0, vmax=1), figsize=(10, 5), legend=True,
                     cmap=dict_col[b])
         plt.xlim(-130, -65)
         plt.ylim(20, 55)
