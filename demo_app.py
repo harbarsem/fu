@@ -32,7 +32,7 @@ with st.echo(code_location='below'):
     a= selected_year
     for b in ['DEMOCRAT','REPUBLICAN', "LIBERTARIAN"]:
         sample = df[(df["year"] == a) & (df["party_simplified"] == b)]
-        sample.plot(column='percentage', norm=mpl.colors.Normalize(vmin=0, vmax=1), figsize=(25, 15), legend=True,
+        plot1 = sample.plot(column='percentage', norm=mpl.colors.Normalize(vmin=0, vmax=1), figsize=(25, 15), legend=True,
                     cmap=dict_col[b])
         plt.xlim(-130, -65)
         plt.ylim(20, 55)
@@ -45,7 +45,7 @@ with st.echo(code_location='below'):
                     plt.text(x, y + 0.7, label, fontsize=8, color='black', alpha=1, weight="bold")
                 else:
                     plt.text(x, y, label, fontsize=8, color='black', alpha=1, weight="bold")
-
+        st.plot(plot1)
 
 
     #selected_regions = st.multiselect("Выберите регионы", data['region_name'].unique())
