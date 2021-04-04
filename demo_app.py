@@ -37,7 +37,7 @@ with st.echo(code_location='below'):
             d = 0.05
         else:
             d = 1
-        sample.plot(column='percentage', norm=matplotlib.colors.Normalize(vmin=0, vmax=d), figsize=(25, 15), legend=True,
+        sample.plot(column='percentage', norm=mpl.colors.Normalize(vmin=0, vmax=d), figsize=(25, 15), legend=True,
                     cmap=dict_col[b])
         plt.xlim(-130, -65)
         plt.ylim(20, 55)
