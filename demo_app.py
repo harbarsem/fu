@@ -39,11 +39,11 @@ with st.echo(code_location='below'):
         a.plot.bar(color=['blue', 'red', 'black'])
         plt.xticks(rotation=30, horizontalalignment="center")
         plt.title("Votes for Democrat and Republican Candidates in {}".format(year), fontweight='bold')
-        plt.xlabel("Party", fontsize=12)
-        plt.ylabel("Number of votes for a candidate from the party", fontsize=12)
+        plt.xlabel("Party", fontsize=8)
+        plt.ylabel("Number of votes for a candidate from the party", fontsize=8)
         camera.snap()
     animation = camera.animate(interval=20)
-    st.pyplot()
+    st.pyplot(animation)
 
 
     dict_col = {'DEMOCRAT': ["Blues", "демократ!"], 'REPUBLICAN': ["Reds", "республиканец!"]}
