@@ -43,8 +43,7 @@ with st.echo(code_location='below'):
         plt.ylabel("Number of votes for a candidate from the party", fontsize=8)
         camera.snap()
     animation = camera.animate(interval=200, repeat=True, repeat_delay=400)
-    animation.save('dem-rep.mp4')
-    st.video('dem-rep.mp4')
+    components.html(animation.to_jshtml(), height=1000)
 
 
     dict_col = {'DEMOCRAT': ["Blues", "демократ!"], 'REPUBLICAN': ["Reds", "республиканец!"]}
