@@ -40,7 +40,7 @@ with st.echo(code_location='below'):
         plt.xticks(rotation=30, horizontalalignment="center")
         plt.title("Votes for Democrat and Republican Candidates in {}".format(year), fontweight='bold', pad=25)
         plt.xlabel("Party", fontsize=12)
-        plt.ylabel("Number of votes for a candidate from the party", fontsize=12, pad=5)
+        plt.ylabel("Number of votes for a candidate from the party", fontsize=12)
         camera.snap()
     animation = camera.animate(interval=500, repeat=True, repeat_delay=400)
     st.components.v1.html(animation.to_jshtml(), height=650, scrolling=True)
