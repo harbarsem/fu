@@ -39,11 +39,11 @@ with st.echo(code_location='below'):
         a.plot.bar(color=['blue', 'red', 'black'])
         plt.xticks(rotation=30, horizontalalignment="center")
         plt.title("Votes for Democrat and Republican Candidates in {}".format(year), fontweight='bold', pad=25)
-        plt.xlabel("Party", fontsize=8)
-        plt.ylabel("Number of votes for a candidate from the party", fontsize=8)
+        plt.xlabel("Party", fontsize=12)
+        plt.ylabel("Number of votes for a candidate from the party", fontsize=12, pad=5)
         camera.snap()
-    animation = camera.animate(interval=200, repeat=True, repeat_delay=400)
-    st.components.v1.html(animation.to_jshtml(), height=1000)
+    animation = camera.animate(interval=500, repeat=True, repeat_delay=400)
+    st.components.v1.html(animation.to_jshtml(), height=650, scrolling=True)
 
 
     dict_col = {'DEMOCRAT': ["Blues", "демократ!"], 'REPUBLICAN': ["Reds", "республиканец!"]}
