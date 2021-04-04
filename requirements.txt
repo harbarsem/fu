@@ -6,4 +6,3 @@ seaborn
 geopandas
 celluloid
 plotly
-streamlit.components.v1

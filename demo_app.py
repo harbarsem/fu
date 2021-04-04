@@ -6,7 +6,6 @@ import seaborn as sns
 import geopandas as gpd
 import matplotlib as mpl
 from celluloid import Camera
-import streamlit.components.v1 as components
 
 with st.echo(code_location='below'):
     st.title("Бессмысленные и беспощадные")
@@ -44,7 +43,7 @@ with st.echo(code_location='below'):
         plt.ylabel("Number of votes for a candidate from the party", fontsize=8)
         camera.snap()
     animation = camera.animate(interval=200, repeat=True, repeat_delay=400)
-    components.html(animation.to_jshtml(), height=1000)
+    st.components.v1.html(animation.to_jshtml(), height=1000)
 
 
     dict_col = {'DEMOCRAT': ["Blues", "демократ!"], 'REPUBLICAN': ["Reds", "республиканец!"]}
