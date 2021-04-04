@@ -28,20 +28,25 @@ with st.echo(code_location='below'):
     selected_year= st.selectbox("Выберите год", df['year'].unique())
     st.write(f"Вы выбрали: {selected_year!r}")
 
-    dict_col={'DEMOCRAT': "Blues", 'REPUBLICAN': "Reds", "LIBERTARIAN": "Oranges"}
-    a= selected_year
-    for b in ['DEMOCRAT','REPUBLICAN', "LIBERTARIAN"]:
+    dict_col = {'DEMOCRAT': "Blues", 'REPUBLICAN': "Reds", "LIBERTARIAN": "Oranges"}
+    a=selected_year
+    for b in ['DEMOCRAT', 'REPUBLICAN', "LIBERTARIAN"]:
         sample = df[(df["year"] == a) & (df["party_simplified"] == b)]
         plot1 = plt.figure()
-        sample.plot(column='percentage', norm=mpl.colors.Normalize(vmin=0, vmax=1), figsize=(10, 5), legend=True,
+        if b == "LIBERTARIAN":
+            d = 0.05
+        else:
+            d = 1
+        sample.plot(column='percentage', norm=matplotlib.colors.Normalize(vmin=0, vmax=d), figsize=(25, 15), legend=True,
                     cmap=dict_col[b])
         plt.xlim(-130, -65)
         plt.ylim(20, 55)
         title = '{} candidate: {}, elections in {}'.format(b.lower(), df[
-            (df["year"] == 2020) & (df["party_simplified"] == 'REPUBLICAN')]['candidate'].unique()[0], a)
+            (df["year"] == a) & (df["party_simplified"] == b)]['candidate'].unique()[0], a)
         mpl.pyplot.title(title, fontsize=20, fontweight='bold', loc='center')
         for x, y, label in zip(sample['ctr'].x - 1.5, sample['ctr'].y, sample["state"]):
-            if label != 'ALASKA' and label != 'HAWAII' and (sample[sample['state'] == label]['area'] > 40000).to_list()[0]:
+            if label != 'ALASKA' and label != 'HAWAII' and (sample[sample['state'] == label]['area'] > 40000).to_list()[
+                0]:
                 if label == "MISSISSIPPI":
                     plt.text(x, y + 0.7, label, fontsize=8, color='black', alpha=1, weight="bold")
                 else:
