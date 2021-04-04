@@ -9,7 +9,7 @@ import matplotlib as mpl
 with st.echo(code_location='below'):
     st.title("Бессмысленные и беспощадные")
     """
-    Посмотрите, каккую долю голосов получали кандидаты по штатам:
+    Посмотрите, какую долю голосов получали кандидаты по штатам:
     """
     st.set_option('deprecation.showPyplotGlobalUse', False)
     data = pd.read_csv("1976-2020-president.csv")
@@ -25,11 +25,16 @@ with st.echo(code_location='below'):
     df['area'] = df['geometry'].to_crs({'init': 'epsg:3395'}).map(lambda
                                                                       p: p.area / 10 ** 6)  # (copy from https://gis.stackexchange.com/questions/218450/getting-polygon-areas-using-geopandas)
 
+    dict_col = {'DEMOCRAT': ["Blues", "демократ!"] 'REPUBLICAN': ["Reds", "республиканец!"]}
+
     selected_year= st.selectbox("Выберите год", df['year'].unique())
     st.write(f"Вы выбрали: {selected_year!r}")
 
-    dict_col = {'DEMOCRAT': "Blues", 'REPUBLICAN': "Reds", "LIBERTARIAN": "Oranges"}
-    a=int(selected_year)
+    a = int(selected_year)
+    sample_zero = df[(df["year"] == a)]
+    win = sample_zero.groupby("party_simplified")["candidatevotes"].sum().idxmax()
+    st.write(f"В {selected_year!r} году победил "+ dict_col[win][1])
+
 
     b = 'REPUBLICAN'
     sample = df[(df["year"] == a) & (df["party_simplified"] == b)]
@@ -38,7 +43,7 @@ with st.echo(code_location='below'):
                 legend_kwds={'label': "Share of votes"})
     plt.xlim(-130, -65)
     plt.ylim(20, 55)
-    title = 'Elections {}: {} candidate - {}'.format(a, df[(df["year"] == 2020) & (df["party_simplified"] == b)][
+    title = 'Elections {}: {} candidate - {}'.format(a, df[(df["year"] == a) & (df["party_simplified"] == b)][
         'candidate'].unique()[0], b)
     mpl.pyplot.title(title, fontsize=30, fontweight='bold', loc='center')
     for x, y, label in zip(sample['rp'].x - 1.5, sample['rp'].y, sample["state"]):
@@ -54,11 +59,11 @@ with st.echo(code_location='below'):
     b = 'DEMOCRAT'
     sample = df[(df["year"] == a) & (df["party_simplified"] == b)]
     sample.plot(column='percentage', norm=mpl.colors.Normalize(vmin=0, vmax=1), figsize=(25, 15), legend=True,
-                cmap="Reds",
+                cmap="Blues",
                 legend_kwds={'label': "Share of votes"})
     plt.xlim(-130, -65)
     plt.ylim(20, 55)
-    title = 'Elections {}: {} candidate - {}'.format(a, df[(df["year"] == 2020) & (df["party_simplified"] == b)][
+    title = 'Elections {}: {} candidate - {}'.format(a, df[(df["year"] == a) & (df["party_simplified"] == b)][
         'candidate'].unique()[0], b)
     mpl.pyplot.title(title, fontsize=30, fontweight='bold', loc='center')
     for x, y, label in zip(sample['rp'].x - 1.5, sample['rp'].y, sample["state"]):
@@ -71,11 +76,6 @@ with st.echo(code_location='below'):
                 plt.text(x, y, label, fontsize=8, color='black', alpha=1, weight="bold")
     st.pyplot()
 
-    x = np.linspace(0, 10, 500)
-    fig = plt.figure()
-    plt.plot(x, np.sin(x))
-    plt.ylim(-2, 2)
-    st.pyplot(fig)
 
     #selected_regions = st.multiselect("Выберите регионы", data['region_name'].unique())
 
