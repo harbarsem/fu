@@ -33,28 +33,38 @@ with st.echo(code_location='below'):
     a = int(selected_year)
     sample_zero = df[(df["year"] == a)]
     win = sample_zero.groupby("party_simplified")["candidatevotes"].sum().idxmax()
-    st.write(f"В {selected_year!r} году победил "+ dict_col[win][1]+" Вот как он завоевывал свои голоса")
+    if a==2000:
+        prez = 'GORE, AL'
+        st.write(f"В {selected_year!r} году больше всего голосов получил(а) "+ dict_col[win][1]+
+             " (хотя президентом стал {})".format(prez)+ " Вот разбивка по штатам:")
+    elif a==2016:
+        prez = 'TRUMP, DONALD J.'
+        st.write(f"В {selected_year!r} году больше всего голосов получил(а) " + dict_col[win][1] +
+                 " (хотя президентом стал {})".format(prez) + " Вот разбивка по штатам:")
+    else:
+        st.write(f"В {selected_year!r} году победил "+ dict_col[win][1]+ " Вот разбивка по штатам:")
 
 
-    b = win
-    sample = df[(df["year"] == a) & (df["party_simplified"] == b)]
-    sample.plot(column='percentage', norm=mpl.colors.Normalize(vmin=0, vmax=1), figsize=(25, 15), legend=True,
-                cmap=dict_col[win][0],
-                legend_kwds={'label': "Share of votes"})
-    plt.xlim(-130, -65)
-    plt.ylim(20, 55)
-    title = 'Elections {}: {} candidate - {}'.format(a, df[(df["year"] == a) & (df["party_simplified"] == b)][
-        'candidate'].unique()[0], b)
-    mpl.pyplot.title(title, fontsize=30, fontweight='bold', loc='center')
-    for x, y, label in zip(sample['rp'].x - 1.5, sample['rp'].y, sample["state"]):
-        if label != 'ALASKA' and label != 'HAWAII' and (sample[sample['state'] == label]['area'] > 40000).to_list()[0]:
-            if label == "MISSISSIPPI" or label == 'VERMONT':
-                plt.text(x, y + 0.7, label, fontsize=8, color='black', alpha=1, weight="bold")
-            elif label == "IDAHO":
-                plt.text(x + 1, y - 1, label, fontsize=8, color='black', alpha=1, weight="bold")
-            else:
-                plt.text(x, y, label, fontsize=8, color='black', alpha=1, weight="bold")
-    st.pyplot()
+    for b in ['DEMOCRAT', 'REPUBLICAN']:
+
+        sample = df[(df["year"] == a) & (df["party_simplified"] == b)]
+        sample.plot(column='percentage', norm=mpl.colors.Normalize(vmin=0, vmax=1), figsize=(25, 15), legend=True,
+                   cmap=dict_col[win][0],
+                  legend_kwds={'label': "Share of votes"})
+        plt.xlim(-130, -65)
+        plt.ylim(20, 55)
+        title = 'Elections {}: {} candidate - {}'.format(a, df[(df["year"] == a) & (df["party_simplified"] == b)][
+            'candidate'].unique()[0], b)
+        mpl.pyplot.title(title, fontsize=30, fontweight='bold', loc='center')
+        for x, y, label in zip(sample['rp'].x - 1.5, sample['rp'].y, sample["state"]):
+            if label != 'ALASKA' and label != 'HAWAII' and (sample[sample['state'] == label]['area'] > 40000).to_list()[0]:
+                if label == "MISSISSIPPI" or label == 'VERMONT':
+                    plt.text(x, y + 0.7, label, fontsize=8, color='black', alpha=1, weight="bold")
+                elif label == "IDAHO":
+                    plt.text(x + 1, y - 1, label, fontsize=8, color='black', alpha=1, weight="bold")
+                else:
+                    plt.text(x, y, label, fontsize=8, color='black', alpha=1, weight="bold")
+        st.pyplot()
 
 
     #selected_regions = st.multiselect("Выберите регионы", data['region_name'].unique())
