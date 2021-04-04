@@ -53,6 +53,11 @@ with st.echo(code_location='below'):
                     plt.text(x, y, label, fontsize=8, color='black', alpha=1, weight="bold")
         st.pyplot(plot1)
 
+    x = np.linspace(0, 10, 500)
+    fig = plt.figure()
+    plt.plot(x, np.sin(x))
+    plt.ylim(-2, 2)
+    st.pyplot(fig)
 
     #selected_regions = st.multiselect("Выберите регионы", data['region_name'].unique())
 
