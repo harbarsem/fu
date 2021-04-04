@@ -5,11 +5,16 @@ import pandas as pd
 import seaborn as sns
 import geopandas as gpd
 import matplotlib as mpl
+from celluloid import Camera
 
 with st.echo(code_location='below'):
     st.title("Бессмысленные и беспощадные")
     """
-    Посмотрите, какую долю голосов получали кандидаты по штатам:
+    Выборы в США: 1976 - 2020
+    """
+
+    """
+    Немого общей статистики - голоса за демократов и республиканцев:
     """
     st.set_option('deprecation.showPyplotGlobalUse', False)
     data = pd.read_csv("1976-2020-president.csv")
@@ -25,10 +30,25 @@ with st.echo(code_location='below'):
     df['area'] = df['geometry'].to_crs({'init': 'epsg:3395'}).map(lambda
                                                                       p: p.area / 10 ** 6)  # (copy from https://gis.stackexchange.com/questions/218450/getting-polygon-areas-using-geopandas)
 
+    fig = plt.figure()
+    camera = Camera(fig)
+    for year in df["year"].unique():
+        sample_1 = df[(df["year"] == year) & (df["candidatevotes"] > 100000)]
+        a = sample_1.groupby("party_detailed")["candidatevotes"].sum().reindex()
+        index=['DEMOCRAT', 'REPUBLICAN', "LIBERTARIAN"])
+        a.plot.bar(color=['blue', 'red', 'black'])
+        plt.xticks(rotation=30, horizontalalignment="center")
+        plt.title("Votes for Democrat and Republican Candidates in {}".format(year), fontweight='bold')
+        plt.xlabel("Party", fontsize=12)
+        plt.ylabel("Number of votes for a candidate from the party", fontsize=12)
+        camera.snap()
+    animation = camera.animate(interval=20)
+    st.pyplot()
+
+
     dict_col = {'DEMOCRAT': ["Blues", "демократ!"], 'REPUBLICAN': ["Reds", "республиканец!"]}
 
     selected_year= st.selectbox("Выберите год", df['year'].unique())
-    st.write(f"Вы выбрали: {selected_year!r}")
 
     a = int(selected_year)
     sample_zero = df[(df["year"] == a)]
@@ -40,7 +60,7 @@ with st.echo(code_location='below'):
     elif a==2016:
         prez = 'TRUMP, DONALD J.'
         st.write(f"В {selected_year!r} году больше всего голосов получил(а) " + dict_col[win][1] +
-                 " (хотя президентом стал {}.)".format(prez) + " Но все же посмотрим, как зовоеывал штаты кандидат, получивший большинство голосов:")
+                 " (хотя президентом стал {})".format(prez) + ". Но все же посмотрим, как зовоеывал штаты кандидат, получивший большинство голосов:")
     else:
         st.write(f"В {selected_year!r} году победил "+ dict_col[win][1]+ " Вот как он завоевывал штаты:")
 
@@ -50,8 +70,8 @@ with st.echo(code_location='below'):
                   legend_kwds={'label': "Share of votes"})
     plt.xlim(-130, -65)
     plt.ylim(20, 55)
-    title = 'Elections {}: {} candidate - {}'.format(a, df[(df["year"] == a) & (df["party_simplified"] == b)][
-            'candidate'].unique()[0], b)
+    title = 'Elections {}: {} - {} candidate'.format(a, df[(df["year"] == a) & (df["party_simplified"] == b)][
+            'candidate'].unique()[0], b.lower())
     mpl.pyplot.title(title, fontsize=30, fontweight='bold', loc='center')
     for x, y, label in zip(sample['rp'].x - 1.5, sample['rp'].y, sample["state"]):
         if label != 'ALASKA' and label != 'HAWAII' and (sample[sample['state'] == label]['area'] > 40000).to_list()[0]:
