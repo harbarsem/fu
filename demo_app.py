@@ -28,7 +28,7 @@ with st.echo(code_location='below'):
     selected_year= st.selectbox("Выберите год", df['year'].unique())
     st.write(f"Вы выбрали: {selected_year!r}")
 
-    dict_col={'DEMOCRAT': "Blues"; 'REPUBLICAN': "Reds"; "OTHER": "Oranges"}
+    dict_col={'DEMOCRAT': "Blues", 'REPUBLICAN': "Reds", "OTHER": "Oranges"}
     a= selected_year
     for b in df['party_simplified']:
         sample = df[(df["year"] == a) & (df["party_simplified"] == b)]
