@@ -25,7 +25,7 @@ with st.echo(code_location='below'):
     df['area'] = df['geometry'].to_crs({'init': 'epsg:3395'}).map(lambda
                                                                       p: p.area / 10 ** 6)  # (copy from https://gis.stackexchange.com/questions/218450/getting-polygon-areas-using-geopandas)
 
-    dict_col = {'DEMOCRAT': ["Blues", "демократ!"] 'REPUBLICAN': ["Reds", "республиканец!"]}
+    dict_col = {'DEMOCRAT': ["Blues", "демократ!"], 'REPUBLICAN': ["Reds", "республиканец!"]}
 
     selected_year= st.selectbox("Выберите год", df['year'].unique())
     st.write(f"Вы выбрали: {selected_year!r}")
