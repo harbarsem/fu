@@ -28,9 +28,9 @@ with st.echo(code_location='below'):
     selected_year= st.selectbox("Выберите год", df['year'].unique())
     st.write(f"Вы выбрали: {selected_year!r}")
 
-    dict_col={'DEMOCRAT': "Blues", 'REPUBLICAN': "Reds", "OTHER": "Oranges"}
+    dict_col={'DEMOCRAT': "Blues", 'REPUBLICAN': "Reds", "LIBERTARIAN": "Oranges"}
     a= selected_year
-    for b in df['party_simplified']:
+    for b in ['DEMOCRAT','REPUBLICAN', "LIBERTARIAN"]:
         sample = df[(df["year"] == a) & (df["party_simplified"] == b)]
         sample.plot(column='percentage', norm=mpl.colors.Normalize(vmin=0, vmax=1), figsize=(25, 15), legend=True,
                     cmap=dict_col[b])
