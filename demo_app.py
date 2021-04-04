@@ -11,7 +11,7 @@ with st.echo(code_location='below'):
     """
     Посмотрите, каккую долю голосов получали кандидаты по штатам:
     """
-
+    st.set_option('deprecation.showPyplotGlobalUse', False)
     data = pd.read_csv("1976-2020-president.csv")
     data = data.drop(['state_fips', 'state_cen', 'state_ic', 'office', 'writein', 'version', 'notes'], axis='columns')
     data['percentage'] = data["candidatevotes"] / data["totalvotes"]
@@ -49,7 +49,27 @@ with st.echo(code_location='below'):
                 plt.text(x + 1, y - 1, label, fontsize=8, color='black', alpha=1, weight="bold")
             else:
                 plt.text(x, y, label, fontsize=8, color='black', alpha=1, weight="bold")
-        st.pyplot()
+    st.pyplot()
+
+    b = 'DEMOCRAT'
+    sample = df[(df["year"] == a) & (df["party_simplified"] == b)]
+    sample.plot(column='percentage', norm=mpl.colors.Normalize(vmin=0, vmax=1), figsize=(25, 15), legend=True,
+                cmap="Reds",
+                legend_kwds={'label': "Share of votes"})
+    plt.xlim(-130, -65)
+    plt.ylim(20, 55)
+    title = 'Elections {}: {} candidate - {}'.format(a, df[(df["year"] == 2020) & (df["party_simplified"] == b)][
+        'candidate'].unique()[0], b)
+    mpl.pyplot.title(title, fontsize=30, fontweight='bold', loc='center')
+    for x, y, label in zip(sample['rp'].x - 1.5, sample['rp'].y, sample["state"]):
+        if label != 'ALASKA' and label != 'HAWAII' and (sample[sample['state'] == label]['area'] > 40000).to_list()[0]:
+            if label == "MISSISSIPPI" or label == 'VERMONT':
+                plt.text(x, y + 0.7, label, fontsize=8, color='black', alpha=1, weight="bold")
+            elif label == "IDAHO":
+                plt.text(x + 1, y - 1, label, fontsize=8, color='black', alpha=1, weight="bold")
+            else:
+                plt.text(x, y, label, fontsize=8, color='black', alpha=1, weight="bold")
+    st.pyplot()
 
     x = np.linspace(0, 10, 500)
     fig = plt.figure()
