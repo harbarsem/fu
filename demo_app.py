@@ -30,7 +30,7 @@ with st.echo(code_location='below'):
     df['area'] = df['geometry'].to_crs({'init': 'epsg:3395'}).map(lambda
                                                                       p: p.area / 10 ** 6)  # (copy from https://gis.stackexchange.com/questions/218450/getting-polygon-areas-using-geopandas)
 
-    fig = plt.figure()
+    fig=plt.figure(figsize=(7, 7))
     camera = Camera(fig)
     for year in df["year"].unique():
         sample_1 = df[(df["year"] == year) & (df["candidatevotes"] > 100000)]
@@ -38,13 +38,13 @@ with st.echo(code_location='below'):
         index=['DEMOCRAT', 'REPUBLICAN', "LIBERTARIAN"])
         a.plot.bar(color=['blue', 'red', 'black'])
         plt.xticks(rotation=30, horizontalalignment="center")
-        plt.title("Votes for Democrat and Republican Candidates in {}".format(year), fontweight='bold')
+        plt.title("Votes for Democrat and Republican Candidates in {}".format(year), fontweight='bold', pad=25)
         plt.xlabel("Party", fontsize=8)
         plt.ylabel("Number of votes for a candidate from the party", fontsize=8)
         camera.snap()
-        st.pyplot()
-    animation = camera.animate(interval=20)
-
+    animation = camera.animate(interval=200, repeat=True, repeat_delay=400)
+    animation.save('dem-rep.gif')
+    st.
 
 
     dict_col = {'DEMOCRAT': ["Blues", "демократ!"], 'REPUBLICAN': ["Reds", "республиканец!"]}
@@ -73,7 +73,7 @@ with st.echo(code_location='below'):
     plt.ylim(20, 55)
     title = 'Elections {}: {} - {} candidate'.format(a, df[(df["year"] == a) & (df["party_simplified"] == b)][
             'candidate'].unique()[0], b.lower())
-    mpl.pyplot.title(title, fontsize=30, fontweight='bold', loc='center')
+    mpl.pyplot.title(title, fontsize=30, fontweight='bold', loc='center', pad=10)
     for x, y, label in zip(sample['rp'].x - 1.5, sample['rp'].y, sample["state"]):
         if label != 'ALASKA' and label != 'HAWAII' and (sample[sample['state'] == label]['area'] > 40000).to_list()[0]:
             if label == "MISSISSIPPI" or label == 'VERMONT':

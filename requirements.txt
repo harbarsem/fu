@@ -5,3 +5,4 @@ pandas
 seaborn
 geopandas
 celluloid
+plotly
