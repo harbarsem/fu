@@ -6,6 +6,7 @@ import seaborn as sns
 import geopandas as gpd
 import matplotlib as mpl
 from celluloid import Camera
+import streamlit.components.v1 as components
 
 with st.echo(code_location='below'):
     st.title("Бессмысленные и беспощадные")
