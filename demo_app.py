@@ -45,7 +45,7 @@ with st.echo(code_location='below'):
                     plt.text(x, y + 0.7, label, fontsize=8, color='black', alpha=1, weight="bold")
                 else:
                     plt.text(x, y, label, fontsize=8, color='black', alpha=1, weight="bold")
-        st.pyplot(plot1)
+        st.pyplot()
 
 
     #selected_regions = st.multiselect("Выберите регионы", data['region_name'].unique())
