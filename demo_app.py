@@ -36,7 +36,7 @@ with st.echo(code_location='below'):
         vbr.append("{}0M".format(i))
         hhh.append(i * 10 ** 7)
 
-    fig=plt.figure(figsize=(6, 6))
+    fig, ax = plt.subplots(figsize=(6, 6))
     camera = Camera(fig)
     for year1 in df["year"].unique():
         sample_1 = df[(df["year"] == year1) & (df["candidatevotes"] > 100000)]
