@@ -30,17 +30,24 @@ with st.echo(code_location='below'):
     df['area'] = df['geometry'].to_crs({'init': 'epsg:3395'}).map(lambda
                                                                       p: p.area / 10 ** 6)  # (copy from https://gis.stackexchange.com/questions/218450/getting-polygon-areas-using-geopandas)
 
-    fig=plt.figure(figsize=(4, 4))
+    vbr = []
+    hhh = []
+    for i in range(9):
+        vbr.append("{}0M".format(i))
+        hhh.append(i * 10 ** 7)
+
+    fig=plt.figure(figsize=(6, 6))
     camera = Camera(fig)
     for year1 in df["year"].unique():
         sample_1 = df[(df["year"] == year1) & (df["candidatevotes"] > 100000)]
         a = sample_1.groupby("party_detailed")["candidatevotes"].sum().reindex(
         index=['DEMOCRAT', 'REPUBLICAN', "LIBERTARIAN"])
-        a.plot.bar(color=['blue', 'red', 'black'])
-        plt.xticks(rotation=30, horizontalalignment="center")
-        plt.title("Votes for Democrat and Republican Candidates in {}".format(year1), fontweight='bold', pad=25)
-        plt.xlabel("Party", fontsize=12)
-        plt.ylabel("Number of votes for a candidate from the party", fontsize=12)
+        a.plot.bar(color=['mediumblue', 'red', 'black'])
+        plt.xticks(rotation=0, horizontalalignment="center")
+        plt.title("Votes for three parties in {}".format(year), fontweight='bold', pad=15)
+        plt.xlabel("", fontsize=12)
+        plt.ylabel("Number of votes", fontsize=12)
+        plt.yticks(hhh, vbr)
         camera.snap()
     animation = camera.animate(interval=600, repeat=True, repeat_delay=400)
     st.components.v1.html(animation.to_jshtml(), height=700, scrolling=True)
