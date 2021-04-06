@@ -75,9 +75,9 @@ with st.echo(code_location='below'):
 
     fig = plt.figure(figsize=(30, 15))
     sns.heatmap(margins, vmin=-0.25, vmax=0.25, center=0, cmap='coolwarm', yticklabels=True, linewidths=1.7)
-    plt.xlabel('Year', fontsize=20, fontweight='bold')
-    plt.ylabel('State', fontsize=20, fontweight='bold')
-    plt.title('% margin (%Republican - %Democrat) for each state', fontsize=30, fontweight='bold', pad=20)
+    plt.xlabel('Year', fontsize=22, fontweight='bold', labelpad=10)
+    plt.ylabel('State', fontsize=22, fontweight='bold')
+    plt.title('% margin (%Republican - %Democrat) for each state', fontsize=28, fontweight='bold', pad=20)
 
     st.pyplot()
 
