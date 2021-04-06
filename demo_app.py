@@ -44,7 +44,7 @@ with st.echo(code_location='below'):
         index=['DEMOCRAT', 'REPUBLICAN', "LIBERTARIAN"])
         a.plot.bar(color=['mediumblue', 'red', 'black'])
         plt.xticks(rotation=0, horizontalalignment="center")
-        plt.title("Votes for three parties in {}".format(year), fontweight='bold', pad=15)
+        plt.title("Votes for three parties in {}".format(year1), fontweight='bold', pad=15)
         plt.xlabel("", fontsize=12)
         plt.ylabel("Number of votes", fontsize=12)
         plt.yticks(hhh, vbr)
