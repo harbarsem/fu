@@ -52,10 +52,10 @@ with st.echo(code_location='below'):
     animation = camera.animate(interval=600, repeat=True, repeat_delay=400)
     st.components.v1.html(animation.to_jshtml(), height=700, scrolling=True)
 
-    """""
+
     """
     
-    #Теперь наше естественное желание - понять, как каждый штат менял предпочтения за эти годы. Посмотрим!
+    Теперь наше естественное желание - понять, как каждый штат менял предпочтения за эти годы. Посмотрим!
     
     """
 
@@ -123,8 +123,7 @@ with st.echo(code_location='below'):
 
 
 
-selected_regions = st.multiselect("Выберите регионы", data['region_name'].unique())
+#selected_regions = st.multiselect("Выберите регионы", data['region_name'].unique())
 
 
-"""
 
