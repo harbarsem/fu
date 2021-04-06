@@ -30,7 +30,7 @@ with st.echo(code_location='below'):
     df['area'] = df['geometry'].to_crs({'init': 'epsg:3395'}).map(lambda
                                                                       p: p.area / 10 ** 6)  # (copy from https://gis.stackexchange.com/questions/218450/getting-polygon-areas-using-geopandas)
 
-    fig=plt.figure(figsize=(7, 7))
+    fig=plt.figure(figsize=(4, 4))
     camera = Camera(fig)
     for year1 in df["year"].unique():
         sample_1 = df[(df["year"] == year1) & (df["candidatevotes"] > 100000)]
@@ -43,7 +43,14 @@ with st.echo(code_location='below'):
         plt.ylabel("Number of votes for a candidate from the party", fontsize=12)
         camera.snap()
     animation = camera.animate(interval=600, repeat=True, repeat_delay=400)
-    st.components.v1.html(animation.to_jshtml(), scrolling=True)
+    st.components.v1.html(animation.to_jshtml(), height=700, scrolling=True)
+
+    """""
+    """
+    
+    #Теперь наше естественное желание - понять, как каждый штат менял предпочтения за эти годы. Посмотрим!
+    
+    """
 
     simply = df[(df['party_simplified'] == 'DEMOCRAT') | (df['party_simplified'] == 'REPUBLICAN')]
     simply1 = simply.drop(df.columns.difference(['name', 'year', 'percentage', 'party_simplified']), 1).copy()
@@ -69,7 +76,7 @@ with st.echo(code_location='below'):
 
     dict_col = {'DEMOCRAT': ["Blues", "демократ!"], 'REPUBLICAN': ["Reds", "республиканец!"]}
     """
-    ___
+    #___
     """
     selected_year= st.selectbox("Выберите год", df['year'].unique())
 
@@ -106,15 +113,11 @@ with st.echo(code_location='below'):
                 plt.text(x, y, label, fontsize=8, color='black', alpha=1, weight="bold")
     st.pyplot()
 
-    """
-    Теперь наше естественное желание - понять, как каждый штат менял предпочтения за эти годы. Посмотрим!
-    """
 
 
 
-
-    #selected_regions = st.multiselect("Выберите регионы", data['region_name'].unique())
-
+selected_regions = st.multiselect("Выберите регионы", data['region_name'].unique())
 
 
+"""
 
