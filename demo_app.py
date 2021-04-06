@@ -73,10 +73,10 @@ with st.echo(code_location='below'):
     margins = margins.drop(margins.columns.difference(['wh', 'marg', "name_x", "year_x"]), 1)
     margins = margins.pivot_table(index='name_x', columns='year_x', values='marg')
 
-    fig = plt.figure(figsize=(20, 15))
+    fig = plt.figure(figsize=(30, 15))
     sns.heatmap(margins, vmin=-0.25, vmax=0.25, center=0, cmap='coolwarm', yticklabels=True, linewidths=1.7)
-    plt.xlabel('Year', fontsize=16, fontweight='bold')
-    plt.ylabel('State', fontsize=16, fontweight='bold')
+    plt.xlabel('Year', fontsize=20, fontweight='bold')
+    plt.ylabel('State', fontsize=20, fontweight='bold')
     plt.title('% margin (%Republican - %Democrat) for each state', fontsize=30, fontweight='bold', pad=20)
 
     st.pyplot()
