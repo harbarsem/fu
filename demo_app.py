@@ -42,8 +42,8 @@ with st.echo(code_location='below'):
         plt.xlabel("Party", fontsize=12)
         plt.ylabel("Number of votes for a candidate from the party", fontsize=12)
         camera.snap()
-    animation = camera.animate(interval=500, repeat=True, repeat_delay=400)
-    st.components.v1.html(animation.to_jshtml(), height=450, width=200, scrolling=True)
+    animation = camera.animate(interval=600, repeat=True, repeat_delay=400)
+    st.components.v1.html(animation.to_jshtml(), scrolling=True)
 
     simply = df[(df['party_simplified'] == 'DEMOCRAT') | (df['party_simplified'] == 'REPUBLICAN')]
     simply1 = simply.drop(df.columns.difference(['name', 'year', 'percentage', 'party_simplified']), 1).copy()
@@ -58,7 +58,6 @@ with st.echo(code_location='below'):
     df = df.merge(margins2, left_on='wh', right_on='wh')
     margins = margins.drop(margins.columns.difference(['wh', 'marg', "name_x", "year_x"]), 1)
     margins = margins.pivot_table(index='name_x', columns='year_x', values='marg')
-    margins = margins.set_index('name_x')
 
     fig = plt.figure(figsize=(20, 15))
     sns.heatmap(margins, vmin=-0.25, vmax=0.25, center=0, cmap='coolwarm', yticklabels=True, linewidths=1.7)
