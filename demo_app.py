@@ -32,22 +32,46 @@ with st.echo(code_location='below'):
 
     fig=plt.figure(figsize=(7, 7))
     camera = Camera(fig)
-    for year in df["year"].unique():
-        sample_1 = df[(df["year"] == year) & (df["candidatevotes"] > 100000)]
+    for year1 in df["year"].unique():
+        sample_1 = df[(df["year"] == year1) & (df["candidatevotes"] > 100000)]
         a = sample_1.groupby("party_detailed")["candidatevotes"].sum().reindex(
         index=['DEMOCRAT', 'REPUBLICAN', "LIBERTARIAN"])
         a.plot.bar(color=['blue', 'red', 'black'])
         plt.xticks(rotation=30, horizontalalignment="center")
-        plt.title("Votes for Democrat and Republican Candidates in {}".format(year), fontweight='bold', pad=25)
+        plt.title("Votes for Democrat and Republican Candidates in {}".format(year1), fontweight='bold', pad=25)
         plt.xlabel("Party", fontsize=12)
         plt.ylabel("Number of votes for a candidate from the party", fontsize=12)
         camera.snap()
     animation = camera.animate(interval=500, repeat=True, repeat_delay=400)
-    st.components.v1.html(animation.to_jshtml(), height=650, scrolling=True)
+    st.components.v1.html(animation.to_jshtml(), height=450, width=200, scrolling=True)
 
+    simply = df[(df['party_simplified'] == 'DEMOCRAT') | (df['party_simplified'] == 'REPUBLICAN')]
+    simply1 = simply.drop(df.columns.difference(['name', 'year', 'percentage', 'party_simplified']), 1).copy()
+    dem = simply1[simply1['party_simplified'] == 'DEMOCRAT'].copy()
+    rep = simply1[simply1['party_simplified'] == 'REPUBLICAN'].copy()
+    df['wh'] = df['name'] + df['year'].astype(str)
+    dem['wh'] = dem['name'] + dem['year'].astype(str)
+    rep['wh'] = rep['name'] + rep['year'].astype(str)
+    margins = dem.merge(rep, left_on='wh', right_on='wh').copy()
+    margins['marg'] = -margins["percentage_x"] + margins["percentage_y"]
+    margins2 = margins.drop(margins.columns.difference(['wh', 'marg']), 1)
+    df = df.merge(margins2, left_on='wh', right_on='wh')
+    margins = margins.drop(margins.columns.difference(['wh', 'marg', "name_x", "year_x"]), 1)
+    margins = margins.pivot_table(index='name_x', columns='year_x', values='marg')
+    margins = margins.set_index('name_x')
+
+    fig = plt.figure(figsize=(20, 15))
+    sns.heatmap(margins, vmin=-0.25, vmax=0.25, center=0, cmap='coolwarm', yticklabels=True, linewidths=1.7)
+    plt.xlabel('Year', fontsize=12, fontweight='bold')
+    plt.ylabel('State', fontsize=12, fontweight='bold')
+    plt.title('% margin (%Republican - %Democrat) for each state', fontsize=16, fontweight='bold', pad=20)
+
+    st.pyplot()
 
     dict_col = {'DEMOCRAT': ["Blues", "демократ!"], 'REPUBLICAN': ["Reds", "республиканец!"]}
-
+    """
+    ___
+    """
     selected_year= st.selectbox("Выберите год", df['year'].unique())
 
     a = int(selected_year)
@@ -82,6 +106,12 @@ with st.echo(code_location='below'):
             else:
                 plt.text(x, y, label, fontsize=8, color='black', alpha=1, weight="bold")
     st.pyplot()
+
+    """
+    Теперь наше естественное желание - понять, как каждый штат менял предпочтения за эти годы. Посмотрим!
+    """
+
+
 
 
     #selected_regions = st.multiselect("Выберите регионы", data['region_name'].unique())
