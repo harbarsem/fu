@@ -8,7 +8,7 @@ import matplotlib as mpl
 from celluloid import Camera
 
 with st.echo(code_location='below'):
-    st.title("Бессмысленные и беспощадные")
+    st.title("Ну и ну!")
     """
     Выборы в США: 1976 - 2020
     """
