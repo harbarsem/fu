@@ -35,7 +35,7 @@ with st.echo(code_location='below'):
         vbr.append("{}0M".format(i))
         hhh.append(i * 10 ** 7)
 
-    fig, ax = plt.subplots(figsize=(7, 7))
+    fig, ax = plt.subplots(figsize=(5, 6))
     camera = Camera(fig)
     for year1 in list(df["year"].unique()):
         sample_1 = df[(df["year"] == year1) & (df["candidatevotes"] > 100000)]
@@ -43,13 +43,13 @@ with st.echo(code_location='below'):
         index=['DEMOCRAT', 'REPUBLICAN', "LIBERTARIAN"])
         a.plot.bar(color=['#3d50bd', '#e83933', 'black'])
         plt.xticks(rotation=0, horizontalalignment="center")
-        ax.text(0.15, 1.03, "Votes for three parties in {}".format(year1), transform=ax.transAxes, fontsize=14, fontweight='bold')
+        ax.text(0.08, 1.03, "Votes for three parties in {}".format(year1), transform=ax.transAxes, fontsize=14, fontweight='bold')
         plt.xlabel("", fontsize=12)
         plt.ylabel("NUMBER OF VOTES", fontsize=12)
         plt.yticks(hhh, vbr)
         camera.snap()
     animation = camera.animate(interval=400, repeat=True, repeat_delay=400)
-    st.components.v1.html(animation.to_jshtml(), height=700, scrolling=True)
+    st.components.v1.html(animation.to_jshtml(), scrolling=True)
 
 
     """
@@ -74,7 +74,7 @@ with st.echo(code_location='below'):
     margins_main = margins.pivot_table(index='name_x', columns='year_x', values='marg')
     k = df.copy()
     #lt = ["ALABAMA", "OREGON", "OHIO", "VERMONT", "WISCONSIN", "WYOMING", "RHODE ISLAND", "DISTRICT OF COLUMBIA","TEXAS"]
-    selected_states=st.multiselect("Выберите названия штатов (как минимум 4)", list(df['name'].unique()))#, default=lt)
+    selected_states=st.multiselect("Выберите названия штатов (как минимум 4):", list(df['name'].unique()))#, default=lt)
     selected_states=list(selected_states)
     if len(selected_states)>3:
         k=margins_main.loc[selected_states]
@@ -85,17 +85,22 @@ with st.echo(code_location='below'):
         plt.title('% margin (%Republican - %Democrat) for each state', fontsize=16, fontweight='bold', pad=20)
         st.pyplot()
     else:
-        st.write('Вы выбрали меньше 4 штатов')
+        st.write('Пока Вы выбрали меньше 4 штатов!')
 
 
     dict_col = {'DEMOCRAT': ["Blues", "демократ!"], 'REPUBLICAN': ["Reds", "республиканец!"]}
     """
-    #___
+   
+   
+   
+   
     """
     selected_year= st.selectbox("Выберите год", df['year'].unique())
-
     a = int(selected_year)
     sample_zero = df[(df["year"] == a)]
+    dem_cand = sample_zero[sample_zero['party_detailed'] == 'DEMOCRAT']['candidate'].unique()[0]
+    rep_cand = sample_zero[sample_zero['party_detailed'] == 'REPUBLICAN']['candidate'].unique()[0]
+    st.write(f"В {selected_year!r} году участвовали политики {rep_cand!r} от республиканцев и {dem_cand!r} от демократов.")
     win = sample_zero.groupby("party_simplified")["candidatevotes"].sum().idxmax()
     if a==2000:
         prez = 'GORE, AL'
@@ -106,18 +111,22 @@ with st.echo(code_location='below'):
         st.write(f"В {selected_year!r} году больше всего голосов получил(а) " + dict_col[win][1] +
                  " (хотя президентом стал {})".format(prez) + ". Но все же посмотрим, как зовоеывал штаты кандидат, получивший большинство голосов:")
     else:
-        st.write(f"В {selected_year!r} году победил "+ dict_col[win][1]+ " Вот как он завоевывал штаты:")
+        st.write(f"В {selected_year!r} году победил "+ dict_col[win][1]+ " А вот как голосовали штаты (на графике - разница между результатами республиканца и демократа")
 
-    b=win
-    sample = df[(df["year"] == a) & (df["party_simplified"] == b)]
-    sample.plot(column='percentage', vmin=0, vmax=1, figsize=(25, 15), legend=True, cmap=dict_col[win][0])
+    """
+     
+     
+    """
+    a = 2020
+    sample5 = df[(df["year"] == a) & (df["party_simplified"] == "DEMOCRAT")]
+    sample5.plot(column='marg', vmin=-0.3, vmax=0.3, figsize=(25, 15), legend=True, cmap='coolwarm')
     plt.xlim(-130, -65)
     plt.ylim(20, 55)
-    title = 'Elections {}: {} - {} candidate'.format(a, df[(df["year"] == a) & (df["party_simplified"] == b)][
-            'candidate'].unique()[0], b.lower())
+    title = 'Elections {}: state-level margin'.format(a)
     mpl.pyplot.title(title, fontsize=20, fontweight='bold', loc='center', pad=10)
-    for x, y, label in zip(sample['rp'].x - 1.5, sample['rp'].y, sample["state"]):
-        if label != 'ALASKA' and label != 'HAWAII' and (sample[sample['state'] == label]['area'] > 40000).to_list()[0]:
+    for x, y, label in zip(sample5['rp'].x - 1.5, sample5['rp'].y, sample5["state"]):
+        if label != 'ALASKA' and label != 'HAWAII' and (sample5[sample5['state'] == label]['area'] > 40000).to_list()[
+            0]:
             if label == "MISSISSIPPI" or label == 'VERMONT':
                 plt.text(x, y + 0.7, label, fontsize=8, color='black', alpha=1, weight="bold")
             elif label == "IDAHO":
@@ -126,8 +135,6 @@ with st.echo(code_location='below'):
                 plt.text(x, y, label, fontsize=8, color='black', alpha=1, weight="bold")
     plt.text(-56, 35, "Share of votes", fontsize=14, color='black', weight="bold", rotation='vertical')
     st.pyplot()
-
-
 
 
 
