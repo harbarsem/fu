@@ -117,7 +117,6 @@ with st.echo(code_location='below'):
      
      
     """
-    a = 2020
     sample5 = df[(df["year"] == a) & (df["party_simplified"] == "DEMOCRAT")]
     sample5.plot(column='marg', vmin=-0.3, vmax=0.3, figsize=(25, 15), legend=True, cmap='coolwarm')
     plt.xlim(-130, -65)
