@@ -35,9 +35,9 @@ with st.echo(code_location='below'):
         vbr.append("{}0M".format(i))
         hhh.append(i * 10 ** 7)
 
-    fig, ax = plt.subplots(figsize=(6, 6))
+    fig, ax = plt.subplots(figsize=(4, 4))
     camera = Camera(fig)
-    for year1 in df["year"].unique():
+    for year1 in list(df["year"].unique()):
         sample_1 = df[(df["year"] == year1) & (df["candidatevotes"] > 100000)]
         a = sample_1.groupby("party_detailed")["candidatevotes"].sum().reindex(
         index=['DEMOCRAT', 'REPUBLICAN', "LIBERTARIAN"])
@@ -48,7 +48,7 @@ with st.echo(code_location='below'):
         plt.ylabel("NUMBER OF VOTES", fontsize=12)
         plt.yticks(hhh, vbr)
         camera.snap()
-    animation = camera.animate(interval=600, repeat=True, repeat_delay=400)
+    animation = camera.animate(interval=700, repeat=True, repeat_delay=400)
     st.components.v1.html(animation.to_jshtml(), height=400, scrolling=True)
 
 
