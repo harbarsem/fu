@@ -41,7 +41,7 @@ with st.echo(code_location='below'):
         sample_1 = df[(df["year"] == year1) & (df["candidatevotes"] > 100000)]
         a = sample_1.groupby("party_detailed")["candidatevotes"].sum().reindex(
         index=['DEMOCRAT', 'REPUBLICAN', "LIBERTARIAN"])
-        a.plot.bar(color=['mediumblue', 'red', 'black'])
+        a.plot.bar(color=['#3d50bd', '#e83933', 'black'])
         plt.xticks(rotation=0, horizontalalignment="center")
         ax.text(0.15, 1.03, "Votes for three parties in {}".format(year1), transform=ax.transAxes, fontsize=14, fontweight='bold')
         plt.xlabel("", fontsize=12)
