@@ -35,7 +35,7 @@ with st.echo(code_location='below'):
         vbr.append("{}0M".format(i))
         hhh.append(i * 10 ** 7)
 
-    fig, ax = plt.subplots(figsize=(4, 4))
+    fig, ax = plt.subplots(figsize=(7, 7))
     camera = Camera(fig)
     for year1 in list(df["year"].unique()):
         sample_1 = df[(df["year"] == year1) & (df["candidatevotes"] > 100000)]
@@ -75,8 +75,9 @@ with st.echo(code_location='below'):
     lt = ['ALABAMA', 'OREGON', 'OHIO', 'VERMONT', "WISCONSIN", "WYOMING", "RHODE ISLAND", "DISTRICT OF COLUMBIA",
           "TEXAS"]
     selected_states=st.multiselect("Выберите названия штатов (как минимум 4)", df['name'].unique(), default=lt)
+    selected_states=list(selected_states)
     if len(selected_states)>3:
-        k = margins_main.drop(margins_main.index.difference(lt))
+        k=margins_main.loc[selected_states]
         fig = plt.figure(figsize=(15, 0.5 * len(lt)))
         sns.heatmap(k, vmin=-0.3, vmax=0.3, center=0, cmap='coolwarm', yticklabels=True, linewidths=3)
         plt.xlabel('Year', fontsize=14, fontweight='bold')
