@@ -72,7 +72,7 @@ with st.echo(code_location='below'):
     df = df.merge(margins2, left_on='wh', right_on='wh')
     margins = margins.drop(margins.columns.difference(['wh', 'marg', "name_x", "year_x"]), 1)
     margins_main = margins.pivot_table(index='name_x', columns='year_x', values='marg')
-    k = margins_main.loc[0:1]
+    k = df.copy()
     #lt = ["ALABAMA", "OREGON", "OHIO", "VERMONT", "WISCONSIN", "WYOMING", "RHODE ISLAND", "DISTRICT OF COLUMBIA","TEXAS"]
     selected_states=st.multiselect("Выберите названия штатов (как минимум 4)", list(df['name'].unique()))#, default=lt)
     selected_states=list(selected_states)
