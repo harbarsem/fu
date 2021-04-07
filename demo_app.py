@@ -20,7 +20,7 @@ with st.echo(code_location='below'):
     data = pd.read_csv("1976-2020-president.csv")
     data = data.drop(['state_fips', 'state_cen', 'state_ic', 'office', 'writein', 'version', 'notes'], axis='columns')
     data['percentage'] = data["candidatevotes"] / data["totalvotes"]
-    geo_states = gpd.read_file("https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/50m/cultural/ne_50m_admin_1_states_provinces.zip")
+    geo_states = gpd.read_file("ne_50m_admin_1_states_provinces.shp")
     geo_states = geo_states[geo_states["iso_a2"] == "US"]
     geo_states['name'] = geo_states['name'].apply(lambda x: x.upper())
     geo_states = geo_states[['name', 'geometry']]
@@ -71,13 +71,12 @@ with st.echo(code_location='below'):
     margins2 = margins.drop(margins.columns.difference(['wh', 'marg']), 1)
     df = df.merge(margins2, left_on='wh', right_on='wh')
     margins = margins.drop(margins.columns.difference(['wh', 'marg', "name_x", "year_x"]), 1)
-    margins = margins.pivot_table(index='name_x', columns='year_x', values='marg')
+    margins_main = margins.pivot_table(index='name_x', columns='year_x', values='marg')
     lt = ['ALABAMA', 'OREGON', 'OHIO', 'VERMONT', "WISCONSIN", "WYOMING", "RHODE ISLAND", "DISTRICT OF COLUMBIA",
           "TEXAS"]
-
     selected_states=st.multiselect("Выберите названия штатов (как минимум 4)", df['name'].unique(), default=lt)
     if len(selected_states)>3:
-        k = margins.drop(margins.index.difference(lt))
+        k = margins_main.drop(margins_main.index.difference(lt))
         fig = plt.figure(figsize=(15, 0.5 * len(lt)))
         sns.heatmap(k, vmin=-0.3, vmax=0.3, center=0, cmap='coolwarm', yticklabels=True, linewidths=3)
         plt.xlabel('Year', fontsize=14, fontweight='bold')
