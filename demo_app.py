@@ -98,9 +98,9 @@ with st.echo(code_location='below'):
     selected_year= st.selectbox("Выберите год", df['year'].unique())
     a = int(selected_year)
     sample_zero = df[(df["year"] == a)]
-    dem_cand = sample_zero[sample_zero['party_detailed'] == 'DEMOCRAT']['candidate'].unique()[0]
-    rep_cand = sample_zero[sample_zero['party_detailed'] == 'REPUBLICAN']['candidate'].unique()[0]
-    st.write(f"В {selected_year!r} году участвовали политики {rep_cand!r} от республиканцев и {dem_cand!r} от демократов.")
+    dem_cand = str(sample_zero[sample_zero['party_detailed'] == 'DEMOCRAT']['candidate'].unique()[0])
+    rep_cand = str(sample_zero[sample_zero['party_detailed'] == 'REPUBLICAN']['candidate'].unique()[0])
+    st.write("В {} году участвовали политики {} от республиканцев и {} от демократов.".format(a, rep_cand, dem_cand))
     win = sample_zero.groupby("party_simplified")["candidatevotes"].sum().idxmax()
     if a==2000:
         prez = 'GORE, AL'
@@ -111,7 +111,7 @@ with st.echo(code_location='below'):
         st.write(f"В {selected_year!r} году больше всего голосов получил(а) " + dict_col[win][1] +
                  " (хотя президентом стал {})".format(prez) + ". Но все же посмотрим, как зовоеывал штаты кандидат, получивший большинство голосов:")
     else:
-        st.write(f"В {selected_year!r} году победил "+ dict_col[win][1]+ " А вот как голосовали штаты (на графике - разница между результатами республиканца и демократа")
+        st.write(f"Победил "+ dict_col[win][1]+ " А вот как голосовали штаты (на графике - разница между результатами республиканца и демократа")
 
     """
      
