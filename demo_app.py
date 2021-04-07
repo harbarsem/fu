@@ -74,7 +74,7 @@ with st.echo(code_location='below'):
     margins_main = margins.pivot_table(index='name_x', columns='year_x', values='marg')
     lt = ['ALABAMA', 'OREGON', 'OHIO', 'VERMONT', "WISCONSIN", "WYOMING", "RHODE ISLAND", "DISTRICT OF COLUMBIA",
           "TEXAS"]
-    selected_states=st.multiselect("Выберите названия штатов (как минимум 4)", df['name'].unique(), default=lt)
+    selected_states=st.multiselect("Выберите названия штатов (как минимум 4)", list(df['name'].unique()), default=lt)
     selected_states=list(selected_states)
     if len(selected_states)>3:
         k=margins_main.loc[selected_states]
