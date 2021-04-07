@@ -25,10 +25,9 @@ with st.echo(code_location='below'):
     geo_states['name'] = geo_states['name'].apply(lambda x: x.upper())
     geo_states = geo_states[['name', 'geometry']]
     geo_states["rp"] = geo_states['geometry'].representative_point()
-    #geo_states['ctr'] = geo_states['geometry'].to_crs({'init': 'epsg:3395'}).centroid
     df = geo_states.merge(data, how="right", left_on="name", right_on="state")
     df['area'] = df['geometry'].to_crs({'init': 'epsg:3395'}).map(lambda
-                                                                      p: p.area / 10 ** 6)  # (copy from https://gis.stackexchange.com/questions/218450/getting-polygon-areas-using-geopandas)
+                                                                      p: p.area / 10 ** 6)  # (this line - from https://gis.stackexchange.com/questions/218450/getting-polygon-areas-using-geopandas)
 
     vbr = []
     hhh = []
@@ -36,7 +35,7 @@ with st.echo(code_location='below'):
         vbr.append("{}0M".format(i))
         hhh.append(i * 10 ** 7)
 
-    fig, ax = plt.subplots(figsize=(6, 6))
+    fig, ax = plt.subplots(figsize=(3, 3))
     camera = Camera(fig)
     for year1 in df["year"].unique():
         sample_1 = df[(df["year"] == year1) & (df["candidatevotes"] > 100000)]
@@ -50,7 +49,7 @@ with st.echo(code_location='below'):
         plt.yticks(hhh, vbr)
         camera.snap()
     animation = camera.animate(interval=600, repeat=True, repeat_delay=400)
-    st.components.v1.html(animation.to_jshtml(), height=700, scrolling=True)
+    st.components.v1.html(animation.to_jshtml(), height=350, scrolling=True)
 
 
     """
@@ -58,6 +57,7 @@ with st.echo(code_location='below'):
     Теперь наше естественное желание - понять, как каждый штат менял предпочтения за эти годы. Посмотрим!
     
     """
+
 
     simply = df[(df['party_simplified'] == 'DEMOCRAT') | (df['party_simplified'] == 'REPUBLICAN')]
     simply1 = simply.drop(df.columns.difference(['name', 'year', 'percentage', 'party_simplified']), 1).copy()
@@ -72,14 +72,21 @@ with st.echo(code_location='below'):
     df = df.merge(margins2, left_on='wh', right_on='wh')
     margins = margins.drop(margins.columns.difference(['wh', 'marg', "name_x", "year_x"]), 1)
     margins = margins.pivot_table(index='name_x', columns='year_x', values='marg')
+    lt = ['ALABAMA', 'OREGON', 'OHIO', 'VERMONT', "WISCONSIN", "WYOMING", "RHODE ISLAND", "DISTRICT OF COLUMBIA",
+          "TEXAS"]
 
-    fig = plt.figure(figsize=(30, 15))
-    sns.heatmap(margins, vmin=-0.25, vmax=0.25, center=0, cmap='coolwarm', yticklabels=True, linewidths=1.7)
-    plt.xlabel('Year', fontsize=22, fontweight='bold', labelpad=10)
-    plt.ylabel('State', fontsize=22, fontweight='bold')
-    plt.title('% margin (%Republican - %Democrat) for each state', fontsize=28, fontweight='bold', pad=20)
+    selected_states=st.multiselect("Выберите названия штатов (как минимум 4)", df['name'].unique(), default=lt)
+    if len(selected_states)>3:
+        k = margins.drop(margins.index.difference(lt))
+        fig = plt.figure(figsize=(15, 0.5 * len(lt)))
+        sns.heatmap(k, vmin=-0.3, vmax=0.3, center=0, cmap='coolwarm', yticklabels=True, linewidths=3)
+        plt.xlabel('Year', fontsize=14, fontweight='bold')
+        plt.ylabel('State', fontsize=14, fontweight='bold')
+        plt.title('% margin (%Republican - %Democrat) for each state', fontsize=16, fontweight='bold', pad=20)
+        st.pyplot()
+    else:
+        st.write('Вы выбрали меньше 4 штатов')
 
-    st.pyplot()
 
     dict_col = {'DEMOCRAT': ["Blues", "демократ!"], 'REPUBLICAN': ["Reds", "республиканец!"]}
     """
@@ -103,13 +110,12 @@ with st.echo(code_location='below'):
 
     b=win
     sample = df[(df["year"] == a) & (df["party_simplified"] == b)]
-    sample.plot(column='percentage', norm=mpl.colors.Normalize(vmin=0, vmax=1), figsize=(25, 15), legend=True, cmap=dict_col[win][0],
-                  legend_kwds={'label': "Share of votes"})
+    sample.plot(column='percentage', vmin=0, vmax=1, figsize=(25, 15), legend=True, cmap=dict_col[win][0])
     plt.xlim(-130, -65)
     plt.ylim(20, 55)
     title = 'Elections {}: {} - {} candidate'.format(a, df[(df["year"] == a) & (df["party_simplified"] == b)][
             'candidate'].unique()[0], b.lower())
-    mpl.pyplot.title(title, fontsize=30, fontweight='bold', loc='center', pad=10)
+    mpl.pyplot.title(title, fontsize=20, fontweight='bold', loc='center', pad=10)
     for x, y, label in zip(sample['rp'].x - 1.5, sample['rp'].y, sample["state"]):
         if label != 'ALASKA' and label != 'HAWAII' and (sample[sample['state'] == label]['area'] > 40000).to_list()[0]:
             if label == "MISSISSIPPI" or label == 'VERMONT':
@@ -118,6 +124,7 @@ with st.echo(code_location='below'):
                 plt.text(x + 1, y - 1, label, fontsize=8, color='black', alpha=1, weight="bold")
             else:
                 plt.text(x, y, label, fontsize=8, color='black', alpha=1, weight="bold")
+    plt.text(-56, 35, "Share of votes", fontsize=14, color='black', weight="bold", rotation='vertical')
     st.pyplot()
 
 
