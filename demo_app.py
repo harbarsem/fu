@@ -48,8 +48,8 @@ with st.echo(code_location='below'):
         plt.ylabel("NUMBER OF VOTES", fontsize=12)
         plt.yticks(hhh, vbr)
         camera.snap()
-    animation = camera.animate(interval=700, repeat=True, repeat_delay=400)
-    st.components.v1.html(animation.to_jshtml(), height=400, scrolling=True)
+    animation = camera.animate(interval=400, repeat=True, repeat_delay=400)
+    st.components.v1.html(animation.to_jshtml(), height=700, scrolling=True)
 
 
     """
@@ -72,13 +72,13 @@ with st.echo(code_location='below'):
     df = df.merge(margins2, left_on='wh', right_on='wh')
     margins = margins.drop(margins.columns.difference(['wh', 'marg', "name_x", "year_x"]), 1)
     margins_main = margins.pivot_table(index='name_x', columns='year_x', values='marg')
-    lt = ['ALABAMA', 'OREGON', 'OHIO', 'VERMONT', "WISCONSIN", "WYOMING", "RHODE ISLAND", "DISTRICT OF COLUMBIA",
-          "TEXAS"]
-    selected_states=st.multiselect("Выберите названия штатов (как минимум 4)", list(df['name'].unique()), default=lt)
+    k = margins_main.loc[0:1]
+    #lt = ["ALABAMA", "OREGON", "OHIO", "VERMONT", "WISCONSIN", "WYOMING", "RHODE ISLAND", "DISTRICT OF COLUMBIA","TEXAS"]
+    selected_states=st.multiselect("Выберите названия штатов (как минимум 4)", list(df['name'].unique()))#, default=lt)
     selected_states=list(selected_states)
     if len(selected_states)>3:
         k=margins_main.loc[selected_states]
-        fig = plt.figure(figsize=(15, 0.5 * len(lt)))
+        fig = plt.figure(figsize=(15, 0.5 * len(selected_states)))
         sns.heatmap(k, vmin=-0.3, vmax=0.3, center=0, cmap='coolwarm', yticklabels=True, linewidths=3)
         plt.xlabel('Year', fontsize=14, fontweight='bold')
         plt.ylabel('State', fontsize=14, fontweight='bold')
@@ -130,7 +130,7 @@ with st.echo(code_location='below'):
 
 
 
-#selected_regions = st.multiselect("Выберите регионы", data['region_name'].unique())
+
 
 
 
