@@ -8,6 +8,8 @@ import matplotlib as mpl
 from celluloid import Camera
 import time
 
+from matplotlib.animation import ArtistAnimation
+
 with st.echo(code_location='below'):
     st.title("Ну и ну!")
     """
@@ -50,11 +52,12 @@ with st.echo(code_location='below'):
             plt.yticks(hhh, vbr)
             camera.snap()
         animation = camera.animate(interval=400, repeat=True, repeat_delay=400)
+        st.write("Cache miss:", data.head())
         time.sleep(2)
         return animation
 
-    data=df
-    result=anim_gif(data)
+    data_ch=df
+    result=anim_gif(data_ch)
     st.components.v1.html(result.to_jshtml(), height=400, scrolling=True)
 
 
