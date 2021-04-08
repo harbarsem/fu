@@ -29,7 +29,7 @@ with st.echo(code_location='below'):
     df['area'] = df['geometry'].to_crs({'init': 'epsg:3395'}).map(lambda
                                                                       p: p.area / 10 ** 6)  # (this line - from https://gis.stackexchange.com/questions/218450/getting-polygon-areas-using-geopandas)
     @st.cache
-    def anim_gif():
+    def anim_gif(data):
         vbr = []
         hhh = []
         for i in range(9):
@@ -37,8 +37,8 @@ with st.echo(code_location='below'):
             hhh.append(i * 10 ** 7)
         fig, ax = plt.subplots(figsize=(5, 3))
         camera = Camera(fig)
-        for year1 in list(df["year"].unique()):
-            sample_1 = df[(df["year"] == year1) & (df["candidatevotes"] > 100000)]
+        for year1 in list(data["year"].unique()):
+            sample_1 = data[(data["year"] == year1) & (data["candidatevotes"] > 100000)]
             a = sample_1.groupby("party_detailed")["candidatevotes"].sum().reindex(
             index=['DEMOCRAT', 'REPUBLICAN', "LIBERTARIAN"])
             a.plot.bar(color=['#3d50bd', '#e83933', 'black'])
@@ -51,7 +51,7 @@ with st.echo(code_location='below'):
         animation = camera.animate(interval=400, repeat=True, repeat_delay=400)
         return animation
 
-    st.components.v1.html(anim_gif().to_jshtml(), height=400, scrolling=True)
+    st.components.v1.html(anim_gif(df).to_jshtml(), height=400, scrolling=True)
 
 
     """
