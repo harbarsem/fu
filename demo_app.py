@@ -28,28 +28,30 @@ with st.echo(code_location='below'):
     df = geo_states.merge(data, how="right", left_on="name", right_on="state")
     df['area'] = df['geometry'].to_crs({'init': 'epsg:3395'}).map(lambda
                                                                       p: p.area / 10 ** 6)  # (this line - from https://gis.stackexchange.com/questions/218450/getting-polygon-areas-using-geopandas)
+    @st.cache
+    def anim_gif():
+        vbr = []
+        hhh = []
+        for i in range(9):
+            vbr.append("{}0M".format(i))
+            hhh.append(i * 10 ** 7)
+        fig, ax = plt.subplots(figsize=(5, 3))
+        camera = Camera(fig)
+        for year1 in list(df["year"].unique()):
+            sample_1 = df[(df["year"] == year1) & (df["candidatevotes"] > 100000)]
+            a = sample_1.groupby("party_detailed")["candidatevotes"].sum().reindex(
+            index=['DEMOCRAT', 'REPUBLICAN', "LIBERTARIAN"])
+            a.plot.bar(color=['#3d50bd', '#e83933', 'black'])
+            plt.xticks(rotation=0, horizontalalignment="center")
+            ax.text(0.08, 1.03, "Votes for three parties in {}".format(year1), transform=ax.transAxes, fontsize=14, fontweight='bold')
+            plt.xlabel("", fontsize=12)
+            plt.ylabel("NUMBER OF VOTES", fontsize=12)
+            plt.yticks(hhh, vbr)
+            camera.snap()
+        animation = camera.animate(interval=400, repeat=True, repeat_delay=400)
+        return animation
 
-    vbr = []
-    hhh = []
-    for i in range(9):
-        vbr.append("{}0M".format(i))
-        hhh.append(i * 10 ** 7)
-
-    fig, ax = plt.subplots(figsize=(5, 3))
-    camera = Camera(fig)
-    for year1 in list(df["year"].unique()):
-        sample_1 = df[(df["year"] == year1) & (df["candidatevotes"] > 100000)]
-        a = sample_1.groupby("party_detailed")["candidatevotes"].sum().reindex(
-        index=['DEMOCRAT', 'REPUBLICAN', "LIBERTARIAN"])
-        a.plot.bar(color=['#3d50bd', '#e83933', 'black'])
-        plt.xticks(rotation=0, horizontalalignment="center")
-        ax.text(0.08, 1.03, "Votes for three parties in {}".format(year1), transform=ax.transAxes, fontsize=14, fontweight='bold')
-        plt.xlabel("", fontsize=12)
-        plt.ylabel("NUMBER OF VOTES", fontsize=12)
-        plt.yticks(hhh, vbr)
-        camera.snap()
-    animation = camera.animate(interval=400, repeat=True, repeat_delay=400)
-    st.components.v1.html(animation.to_jshtml(), height=400, scrolling=True)
+    st.components.v1.html(anim_gif().to_jshtml(), height=400, scrolling=True)
 
 
     """
