@@ -31,7 +31,7 @@ with st.echo(code_location='below'):
     df = geo_states.merge(data, how="right", left_on="name", right_on="state")
     df['area'] = df['geometry'].to_crs({'init': 'epsg:3395'}).map(lambda
                                                                       p: p.area / 10 ** 6)  # (this line - from https://gis.stackexchange.com/questions/218450/getting-polygon-areas-using-geopandas)
-    @st.cache
+    @st.cache(show_spinner=False)
     def anim_gif(data):
         vbr = []
         hhh = []
@@ -55,8 +55,8 @@ with st.echo(code_location='below'):
         time.sleep(2)
         return animation
 
-    data_ch=df
-    result=anim_gif(data_ch)
+    data=df
+    result=anim_gif(data)
     st.components.v1.html(result.to_jshtml(), height=400, scrolling=True)
 
 
