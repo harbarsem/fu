@@ -32,8 +32,8 @@ with st.echo(code_location='below'):
                                                                       p: p.area / 10 ** 6)  # (this line - from https://gis.stackexchange.com/questions/218450/getting-polygon-areas-using-geopandas)
     all_years=list(data["year"].unique())
 
-    @st.cache(show_spinner=False)
-    def anim_gif(data):
+    @st.cache
+    def anim_gif(data=df):
         vbr = []
         hhh = []
         for i in range(9):
@@ -42,17 +42,16 @@ with st.echo(code_location='below'):
         fig, ax = plt.subplots(figsize=(5, 3))
         camera = Camera(fig)
         for year1 in all_years:
-            if data==df:
-                sample_1 = data[(data["year"] == year1) & (data["candidatevotes"] > 100000)]
-                a = sample_1.groupby("party_detailed")["candidatevotes"].sum().reindex(
-                index=['DEMOCRAT', 'REPUBLICAN', "LIBERTARIAN"])
-                a.plot.bar(color=['#3d50bd', '#e83933', 'black'])
-                plt.xticks(rotation=0, horizontalalignment="center")
-                ax.text(0.08, 1.03, "Votes for three parties in {}".format(year1), transform=ax.transAxes, fontsize=14, fontweight='bold')
-                plt.xlabel("", fontsize=12)
-                plt.ylabel("NUMBER OF VOTES", fontsize=12)
-                plt.yticks(hhh, vbr)
-                camera.snap()
+            sample_1 = data[(data["year"] == year1) & (data["candidatevotes"] > 100000)]
+            a = sample_1.groupby("party_detailed")["candidatevotes"].sum().reindex(
+            index=['DEMOCRAT', 'REPUBLICAN', "LIBERTARIAN"])
+            a.plot.bar(color=['#3d50bd', '#e83933', 'black'])
+            plt.xticks(rotation=0, horizontalalignment="center")
+            ax.text(0.08, 1.03, "Votes for three parties in {}".format(year1), transform=ax.transAxes, fontsize=14, fontweight='bold')
+            plt.xlabel("", fontsize=12)
+            plt.ylabel("NUMBER OF VOTES", fontsize=12)
+            plt.yticks(hhh, vbr)
+            camera.snap()
         animation = camera.animate(interval=400, repeat=True, repeat_delay=400)
         time.sleep(2)
         return animation
