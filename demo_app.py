@@ -52,7 +52,6 @@ with st.echo(code_location='below'):
             plt.yticks(hhh, vbr)
             camera.snap()
         animation = camera.animate(interval=400, repeat=True, repeat_delay=400)
-        st.write("Cache miss:", data.head())
         time.sleep(2)
         return animation
 
