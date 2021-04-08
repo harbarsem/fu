@@ -6,6 +6,7 @@ import seaborn as sns
 import geopandas as gpd
 import matplotlib as mpl
 from celluloid import Camera
+import time
 
 with st.echo(code_location='below'):
     st.title("Ну и ну!")
@@ -49,9 +50,12 @@ with st.echo(code_location='below'):
             plt.yticks(hhh, vbr)
             camera.snap()
         animation = camera.animate(interval=400, repeat=True, repeat_delay=400)
+        time.sleep(2)
         return animation
 
-    st.components.v1.html(anim_gif(df).to_jshtml(), height=400, scrolling=True)
+    data=df
+    result=anim_gif(data)
+    st.components.v1.html(result.to_jshtml(), height=400, scrolling=True)
 
 
     """
