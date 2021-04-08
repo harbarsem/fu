@@ -6,4 +6,3 @@ seaborn
 geopandas
 celluloid
 plotly
-time
