@@ -7,7 +7,7 @@ import geopandas as gpd
 import matplotlib as mpl
 from celluloid import Camera
 import altair as alt
-from vega_datasets import data
+from vega-datasets import data
 
 
 from matplotlib.animation import ArtistAnimation
