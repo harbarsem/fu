@@ -81,8 +81,8 @@ with st.echo(code_location='below'):
         margins['marg'] = -margins["percentage_x"] + margins["percentage_y"]
         margins2 = margins.drop(margins.columns.difference(['wh', 'marg']), 1)
         margins = margins.drop(margins.columns.difference(['wh', 'marg', "name_x", "year_x"]), 1)
-        margins_main = margins.pivot_table(index='name_x', columns='year_x', values='marg')
-        return [margins2, margins_main]
+        margins_main1 = margins.pivot_table(index='name_x', columns='year_x', values='marg')
+        return [margins2, margins_main1]
 
     margins_main=getting_margins(df)[1]
     df = df.merge(getting_margins(df)[0], left_on='wh', right_on='wh')
