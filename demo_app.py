@@ -80,12 +80,12 @@ with st.echo(code_location='below'):
         margins = dem.merge(rep, left_on='wh', right_on='wh').copy()
         margins['marg'] = -margins["percentage_x"] + margins["percentage_y"]
         margins2 = margins.drop(margins.columns.difference(['wh', 'marg']), 1)
-        df = df.merge(margins2, left_on='wh', right_on='wh')
         margins = margins.drop(margins.columns.difference(['wh', 'marg', "name_x", "year_x"]), 1)
         margins_main = margins.pivot_table(index='name_x', columns='year_x', values='marg')
-        return margins_main
+        return [margins2, margins_main]
 
-    margins_main=getting_margins(df)
+    margins_main=getting_margins(df)[1]
+    df = df.merge(getting_margins(df)[0], left_on='wh', right_on='wh')
     selected_states=st.multiselect("Выберите названия штатов (как минимум 4):", list(df['name'].unique()))#, default=lt)
     selected_states=list(selected_states)
     if len(selected_states)>3:
