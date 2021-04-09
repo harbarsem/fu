@@ -6,7 +6,9 @@ import seaborn as sns
 import geopandas as gpd
 import matplotlib as mpl
 from celluloid import Camera
-import time
+import altair as alt
+from vega_datasets import data
+
 
 from matplotlib.animation import ArtistAnimation
 with st.echo(code_location='below'):
@@ -69,23 +71,20 @@ with st.echo(code_location='below'):
     
     """
 
-    @st.cache
-    def getting_margins(dfset):
-        simply = df[(df['party_simplified'] == 'DEMOCRAT') | (dfset['party_simplified'] == 'REPUBLICAN')]
-        simply1 = simply.drop(dfset.columns.difference(['name', 'year', 'percentage', 'party_simplified']), 1).copy()
-        dem = simply1[simply1['party_simplified'] == 'DEMOCRAT'].copy()
-        rep = simply1[simply1['party_simplified'] == 'REPUBLICAN'].copy()
-        dem['wh'] = dem['name'] + dem['year'].astype(str)
-        rep['wh'] = rep['name'] + rep['year'].astype(str)
-        margins = dem.merge(rep, left_on='wh', right_on='wh').copy()
-        margins['marg'] = -margins["percentage_x"] + margins["percentage_y"]
-        margins2 = margins.drop(margins.columns.difference(['wh', 'marg']), 1)
-        margins = margins.drop(margins.columns.difference(['wh', 'marg', "name_x", "year_x"]), 1)
-        margins_main1 = margins.pivot_table(index='name_x', columns='year_x', values='marg')
-        return [margins2, margins_main1]
 
-    margins_main=getting_margins(df)[1]
-    df = df.merge(getting_margins(df)[0], left_on='wh', right_on='wh')
+    simply = df[(df['party_simplified'] == 'DEMOCRAT') | (df['party_simplified'] == 'REPUBLICAN')]
+    simply1 = simply.drop(df.columns.difference(['name', 'year', 'percentage', 'party_simplified']), 1).copy()
+    dem = simply1[simply1['party_simplified'] == 'DEMOCRAT'].copy()
+    rep = simply1[simply1['party_simplified'] == 'REPUBLICAN'].copy()
+    dem['wh'] = dem['name'] + dem['year'].astype(str)
+    rep['wh'] = rep['name'] + rep['year'].astype(str)
+    margins = dem.merge(rep, left_on='wh', right_on='wh').copy()
+    margins['marg'] = -margins["percentage_x"] + margins["percentage_y"]
+    margins2 = margins.drop(margins.columns.difference(['wh', 'marg']), 1)
+    margins = margins.drop(margins.columns.difference(['wh', 'marg', "name_x", "year_x"]), 1)
+    margins_main = margins.pivot_table(index='name_x', columns='year_x', values='marg')
+
+    df = df.merge(margins2, left_on='wh', right_on='wh')
     selected_states=st.multiselect("Выберите названия штатов (как минимум 4):", list(df['name'].unique()))#, default=lt)
     selected_states=list(selected_states)
     if len(selected_states)>3:
@@ -147,8 +146,21 @@ with st.echo(code_location='below'):
     plt.text(-56, 35, "Share of votes", fontsize=14, color='black', weight="bold", rotation='vertical')
     st.pyplot()
 
+    counties = alt.topo_feature(data.us_10m.url, 'counties')
+    source = data.unemployment.url
 
-
+    alt.Chart(counties).mark_geoshape().encode(
+        color='rate:Q'
+    ).transform_lookup(
+        lookup='id',
+        from_=alt.LookupData(source, 'id', ['rate'])
+    ).project(
+        type='albersUsa'
+    ).properties(
+        width=500,
+        height=300
+    )
+    st.pyplot()
 
 
 
