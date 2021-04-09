@@ -33,7 +33,7 @@ with st.echo(code_location='below'):
         df1 = geo_states.merge(data, how="right", left_on="name", right_on="state")
         df1['area'] = df1['geometry'].to_crs({'init': 'epsg:3395'}).map(lambda p: p.area / 10 ** 6) # (this line - from https://gis.stackexchange.com/questions/218450/getting-polygon-areas-using-geopandas)
         df1['wh'] = df1['name'] + df1['year'].astype(str)
-        return df1
+        return df1.copy()
 
 
     filea = "1976-2020-president.csv"
