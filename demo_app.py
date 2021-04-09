@@ -19,46 +19,47 @@ with st.echo(code_location='below'):
     Немого общей статистики - голоса за демократов и республиканцев:
     """
     st.set_option('deprecation.showPyplotGlobalUse', False)
-    data = pd.read_csv("1976-2020-president.csv")
-    data = data.drop(['state_fips', 'state_cen', 'state_ic', 'office', 'writein', 'version', 'notes'], axis='columns')
-    data['percentage'] = data["candidatevotes"] / data["totalvotes"]
-    geo_states = gpd.read_file("ne_50m_admin_1_states_provinces.shp")
-    geo_states = geo_states[geo_states["iso_a2"] == "US"]
-    geo_states['name'] = geo_states['name'].apply(lambda x: x.upper())
-    geo_states = geo_states[['name', 'geometry']]
-    geo_states["rp"] = geo_states['geometry'].representative_point()
-    df = geo_states.merge(data, how="right", left_on="name", right_on="state")
-    df['area'] = df['geometry'].to_crs({'init': 'epsg:3395'}).map(lambda
-                                                                      p: p.area / 10 ** 6)  # (this line - from https://gis.stackexchange.com/questions/218450/getting-polygon-areas-using-geopandas)
-    all_years=list(data["year"].unique())
 
     @st.cache
-    def anim_gif(data=df):
-        vbr = []
-        hhh = []
-        for i in range(9):
-            vbr.append("{}0M".format(i))
-            hhh.append(i * 10 ** 7)
-        fig, ax = plt.subplots(figsize=(5, 3))
-        camera = Camera(fig)
-        for year1 in all_years:
-            sample_1 = data[(data["year"] == year1) & (data["candidatevotes"] > 100000)]
-            a = sample_1.groupby("party_detailed")["candidatevotes"].sum().reindex(
-            index=['DEMOCRAT', 'REPUBLICAN', "LIBERTARIAN"])
-            a.plot.bar(color=['#3d50bd', '#e83933', 'black'])
-            plt.xticks(rotation=0, horizontalalignment="center")
-            ax.text(0.08, 1.03, "Votes for three parties in {}".format(year1), transform=ax.transAxes, fontsize=14, fontweight='bold')
-            plt.xlabel("", fontsize=12)
-            plt.ylabel("NUMBER OF VOTES", fontsize=12)
-            plt.yticks(hhh, vbr)
-            camera.snap()
-        animation = camera.animate(interval=400, repeat=True, repeat_delay=400)
-        time.sleep(2)
-        return animation
+    def getting_set(filea, fileb):
+        data = pd.read_csv(filea)
+        data = data.drop(['state_fips', 'state_cen', 'state_ic', 'office', 'writein', 'version', 'notes'], axis='columns')
+        data['percentage'] = data["candidatevotes"] / data["totalvotes"]
+        geo_states = gpd.read_file(fileb)
+        geo_states = geo_states[geo_states["iso_a2"] == "US"]
+        geo_states['name'] = geo_states['name'].apply(lambda x: x.upper())
+        geo_states = geo_states[['name', 'geometry']]
+        geo_states["rp"] = geo_states['geometry'].representative_point()
+        df = geo_states.merge(data, how="right", left_on="name", right_on="state")
+        df['area'] = df['geometry'].to_crs({'init': 'epsg:3395'}).map(lambda p: p.area / 10 ** 6) # (this line - from https://gis.stackexchange.com/questions/218450/getting-polygon-areas-using-geopandas)
+        return df
 
-    data=df
-    result=anim_gif(data)
-    st.components.v1.html(result.to_jshtml(), height=400, scrolling=True)
+
+    filea = "1976-2020-president.csv"
+    fileb = "ne_50m_admin_1_states_provinces.shp"
+    df = getting_set(filea,fileb)
+    all_years=list(df["year"].unique())
+
+    vbr = []
+    hhh = []
+    for i in range(9):
+        vbr.append("{}0M".format(i))
+        hhh.append(i * 10 ** 7)
+    fig, ax = plt.subplots(figsize=(5, 3))
+    camera = Camera(fig)
+    for year1 in all_years:
+        sample_1 = df[(df["year"] == year1) & (df["candidatevotes"] > 100000)]
+        a = sample_1.groupby("party_detailed")["candidatevotes"].sum().reindex(
+        index=['DEMOCRAT', 'REPUBLICAN', "LIBERTARIAN"])
+        a.plot.bar(color=['#3d50bd', '#e83933', 'black'])
+        plt.xticks(rotation=0, horizontalalignment="center")
+        ax.text(0.08, 1.03, "Votes for three parties in {}".format(year1), transform=ax.transAxes, fontsize=14, fontweight='bold')
+        plt.xlabel("", fontsize=12)
+        plt.ylabel("NUMBER OF VOTES", fontsize=12)
+        plt.yticks(hhh, vbr)
+        camera.snap()
+    animation = camera.animate(interval=400, repeat=True, repeat_delay=400)
+    st.components.v1.html(animation.to_jshtml(), height=400, scrolling=True)
 
 
     """
@@ -67,22 +68,24 @@ with st.echo(code_location='below'):
     
     """
 
+    @st.cache
+    def getting_margins(df):
+        simply = df[(df['party_simplified'] == 'DEMOCRAT') | (df['party_simplified'] == 'REPUBLICAN')]
+        simply1 = simply.drop(df.columns.difference(['name', 'year', 'percentage', 'party_simplified']), 1).copy()
+        dem = simply1[simply1['party_simplified'] == 'DEMOCRAT'].copy()
+        rep = simply1[simply1['party_simplified'] == 'REPUBLICAN'].copy()
+        df['wh'] = df['name'] + df['year'].astype(str)
+        dem['wh'] = dem['name'] + dem['year'].astype(str)
+        rep['wh'] = rep['name'] + rep['year'].astype(str)
+        margins = dem.merge(rep, left_on='wh', right_on='wh').copy()
+        margins['marg'] = -margins["percentage_x"] + margins["percentage_y"]
+        margins2 = margins.drop(margins.columns.difference(['wh', 'marg']), 1)
+        df = df.merge(margins2, left_on='wh', right_on='wh')
+        margins = margins.drop(margins.columns.difference(['wh', 'marg', "name_x", "year_x"]), 1)
+        margins_main = margins.pivot_table(index='name_x', columns='year_x', values='marg')
+        return margins_main
 
-    simply = df[(df['party_simplified'] == 'DEMOCRAT') | (df['party_simplified'] == 'REPUBLICAN')]
-    simply1 = simply.drop(df.columns.difference(['name', 'year', 'percentage', 'party_simplified']), 1).copy()
-    dem = simply1[simply1['party_simplified'] == 'DEMOCRAT'].copy()
-    rep = simply1[simply1['party_simplified'] == 'REPUBLICAN'].copy()
-    df['wh'] = df['name'] + df['year'].astype(str)
-    dem['wh'] = dem['name'] + dem['year'].astype(str)
-    rep['wh'] = rep['name'] + rep['year'].astype(str)
-    margins = dem.merge(rep, left_on='wh', right_on='wh').copy()
-    margins['marg'] = -margins["percentage_x"] + margins["percentage_y"]
-    margins2 = margins.drop(margins.columns.difference(['wh', 'marg']), 1)
-    df = df.merge(margins2, left_on='wh', right_on='wh')
-    margins = margins.drop(margins.columns.difference(['wh', 'marg', "name_x", "year_x"]), 1)
-    margins_main = margins.pivot_table(index='name_x', columns='year_x', values='marg')
-    k = df.copy()
-    #lt = ["ALABAMA", "OREGON", "OHIO", "VERMONT", "WISCONSIN", "WYOMING", "RHODE ISLAND", "DISTRICT OF COLUMBIA","TEXAS"]
+    margins_main=getting_margins(df)
     selected_states=st.multiselect("Выберите названия штатов (как минимум 4):", list(df['name'].unique()))#, default=lt)
     selected_states=list(selected_states)
     if len(selected_states)>3:
