@@ -32,6 +32,7 @@ with st.echo(code_location='below'):
         geo_states["rp"] = geo_states['geometry'].representative_point()
         df1 = geo_states.merge(data, how="right", left_on="name", right_on="state")
         df1['area'] = df1['geometry'].to_crs({'init': 'epsg:3395'}).map(lambda p: p.area / 10 ** 6) # (this line - from https://gis.stackexchange.com/questions/218450/getting-polygon-areas-using-geopandas)
+        df1['wh'] = df['name'] + df['year'].astype(str)
         return df1
 
 
@@ -69,12 +70,11 @@ with st.echo(code_location='below'):
     """
 
     @st.cache
-    def getting_margins(df):
-        simply = df[(df['party_simplified'] == 'DEMOCRAT') | (df['party_simplified'] == 'REPUBLICAN')]
-        simply1 = simply.drop(df.columns.difference(['name', 'year', 'percentage', 'party_simplified']), 1).copy()
+    def getting_margins(dfset):
+        simply = df[(df['party_simplified'] == 'DEMOCRAT') | (dfset['party_simplified'] == 'REPUBLICAN')]
+        simply1 = simply.drop(dfset.columns.difference(['name', 'year', 'percentage', 'party_simplified']), 1).copy()
         dem = simply1[simply1['party_simplified'] == 'DEMOCRAT'].copy()
         rep = simply1[simply1['party_simplified'] == 'REPUBLICAN'].copy()
-        df['wh'] = df['name'] + df['year'].astype(str)
         dem['wh'] = dem['name'] + dem['year'].astype(str)
         rep['wh'] = rep['name'] + rep['year'].astype(str)
         margins = dem.merge(rep, left_on='wh', right_on='wh').copy()
