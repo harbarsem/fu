@@ -7,7 +7,7 @@ import geopandas as gpd
 import matplotlib as mpl
 from celluloid import Camera
 import altair as alt
-from vega-datasets import data
+from vega_datasets import data
 
 
 from matplotlib.animation import ArtistAnimation
@@ -24,9 +24,9 @@ with st.echo(code_location='below'):
 
     @st.cache
     def getting_set(filea, fileb):
-        data = pd.read_csv(filea)
-        data = data.drop(['state_fips', 'state_cen', 'state_ic', 'office', 'writein', 'version', 'notes'], axis='columns')
-        data['percentage'] = data["candidatevotes"] / data["totalvotes"]
+        datain = pd.read_csv(filea)
+        datain = datain.drop(['state_fips', 'state_cen', 'state_ic', 'office', 'writein', 'version', 'notes'], axis='columns')
+        datain['percentage'] = datain["candidatevotes"] / datain["totalvotes"]
         geo_states = gpd.read_file(fileb)
         geo_states = geo_states[geo_states["iso_a2"] == "US"]
         geo_states['name'] = geo_states['name'].apply(lambda x: x.upper())
