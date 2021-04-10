@@ -22,25 +22,20 @@ with st.echo(code_location='below'):
     """
     st.set_option('deprecation.showPyplotGlobalUse', False)
 
-    @st.cache
-    def getting_set(filea, fileb):
-        datain = pd.read_csv(filea)
-        datain = datain.drop(['state_fips', 'state_cen', 'state_ic', 'office', 'writein', 'version', 'notes'], axis='columns')
-        datain['percentage'] = datain["candidatevotes"] / datain["totalvotes"]
-        geo_states = gpd.read_file(fileb)
-        geo_states = geo_states[geo_states["iso_a2"] == "US"]
-        geo_states['name'] = geo_states['name'].apply(lambda x: x.upper())
-        geo_states = geo_states[['name', 'geometry']]
-        geo_states["rp"] = geo_states['geometry'].representative_point()
-        df1 = geo_states.merge(datain, how="right", left_on="name", right_on="state")
-        df1['area'] = df1['geometry'].to_crs({'init': 'epsg:3395'}).map(lambda p: p.area / 10 ** 6) # (this line - from https://gis.stackexchange.com/questions/218450/getting-polygon-areas-using-geopandas)
-        df1['wh'] = df1['name'] + df1['year'].astype(str)
-        return df1.copy()
-
-
     filea = "1976-2020-president.csv"
     fileb = "ne_50m_admin_1_states_provinces.shp"
-    df = getting_set(filea,fileb)
+
+    datain = pd.read_csv(filea)
+    datain = datain.drop(['state_fips', 'state_cen', 'state_ic', 'office', 'writein', 'version', 'notes'], axis='columns')
+    datain['percentage'] = datain["candidatevotes"] / datain["totalvotes"]
+    geo_states = gpd.read_file(fileb)
+    geo_states = geo_states[geo_states["iso_a2"] == "US"]
+    geo_states['name'] = geo_states['name'].apply(lambda x: x.upper())
+    geo_states = geo_states[['name', 'geometry']]
+    geo_states["rp"] = geo_states['geometry'].representative_point()
+    df = geo_states.merge(datain, how="right", left_on="name", right_on="state")
+    df['area'] = df['geometry'].to_crs({'init': 'epsg:3395'}).map(lambda p: p.area / 10 ** 6) # (this line - from https://gis.stackexchange.com/questions/218450/getting-polygon-areas-using-geopandas)
+    df['wh'] = df['name'] + df['year'].astype(str)
     all_years=list(df["year"].unique())
 
     vbr = []
