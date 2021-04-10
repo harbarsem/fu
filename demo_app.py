@@ -146,6 +146,11 @@ with st.echo(code_location='below'):
     plt.text(-56, 35, "Share of votes", fontsize=14, color='black', weight="bold", rotation='vertical')
     st.pyplot()
 
+    """
+    
+    А это график с количеством выборщиков у каждого штата. Если президентом стал не тот кандидат, который набрал большинство голосов, то все дело в этом:
+
+    """
     college = pd.read_csv("Electoral_College.csv")
     college = college[college['Year'] >= 1976]
     college['Votes'] = college['Votes'].astype(int)
