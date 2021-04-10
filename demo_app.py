@@ -146,21 +146,43 @@ with st.echo(code_location='below'):
     plt.text(-56, 35, "Share of votes", fontsize=14, color='black', weight="bold", rotation='vertical')
     st.pyplot()
 
-    counties = alt.topo_feature(data.us_10m.url, 'counties')
-    source = data.unemployment.url
+    college = pd.read_csv("Electoral_College.csv")
+    college = college[college['Year'] >= 1976]
+    college['Votes'] = college['Votes'].astype(int)
+    votes = college.copy()
+    college['State'] = college['State'].apply(lambda x: x.upper())
+    college['wh'] = college['State'] + college['Year'].astype(str)
+    college["Votes"] = college["Votes"].apply(lambda x: int(x))
+    df = df.merge(college, left_on='wh', right_on='wh')
 
-    c=alt.Chart(counties).mark_geoshape().encode(
-        color='rate:Q'
-    ).transform_lookup(
-        lookup='id',
-        from_=alt.LookupData(source, 'id', ['rate'])
-    ).project(
-        type='albersUsa'
+    votes = votes[votes['Year'] == a]
+    votes['Votes'] = votes['Votes']
+    votes['electors'] = votes['Votes']
+
+    longlat = pd.read_csv("longlat.csv")
+    longlat.drop(['country_code', 'latitude', 'longitude', 'country'], 1)
+    votes = votes.merge(longlat, left_on='State', right_on='usa_state')
+
+    states = alt.topo_feature(data.us_10m.url, 'states')
+    background = alt.Chart(states).mark_geoshape(
+        fill='grey',
+        stroke='white'
     ).properties(
-        width=500,
-        height=300
+        width=650,
+        height=400
+    ).project('albersUsa')
+
+    points = alt.Chart(votes).mark_circle().encode(
+        latitude='usa_state_latitude',
+        longitude='usa_state_longitude',
+        size=alt.Size('Votes', title='Number of Electors', scale=alt.Scale(range=[100, 3600])),
+        color=alt.value('orange'),
+        tooltip=['usa_state', 'electors']
+    ).properties(
+        title='United States Electoral College'
     )
-    st.altair_chart(c)
+
+    st.altair_chart(background + points)
 
 
 
