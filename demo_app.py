@@ -21,7 +21,7 @@ with st.echo(code_location='below'):
     """
 
     """
-    Немyого общей статистики - голоса за демократов и республиканцев в течение 44 лет:
+    Немного общей статистики - голоса за демократов и республиканцев в течение 44 лет:
     """
     st.set_option('deprecation.showPyplotGlobalUse', False)
 
@@ -52,12 +52,12 @@ with st.echo(code_location='below'):
         sample_1 = df[(df["year"] == year1) & (df["candidatevotes"] > 100000)]
         a = sample_1.groupby("party_detailed")["candidatevotes"].sum().reindex(
         index=['DEMOCRAT', 'REPUBLICAN', "LIBERTARIAN"])
-        a.plot.bar(color=['#3d50bd', '#e83933', 'black'])
-        plt.xticks(rotation=0, horizontalalignment="center")
-        ax.text(0.2, 1.03, "Votes for three parties in {}".format(year1), transform=ax.transAxes, fontsize=10, fontweight='bold')
-        plt.xlabel("", fontsize=12)
-        plt.ylabel("NUMBER OF VOTES", fontsize=10)
-        plt.yticks(hhh, vbr)
+        a.plot.bar(color=['#3d50bd', 'darkred', 'black'])
+        plt.xticks(rotation=0, horizontalalignment="center", fontsize=8)
+        ax.text(0.2, 1.03, "Votes for three parties in {}".format(year1), transform=ax.transAxes, fontsize=8, fontweight='bold')
+        plt.xlabel("", fontsize=8)
+        plt.ylabel("NUMBER OF VOTES", fontsize=8)
+        plt.yticks(hhh, vbr, fontsize=8)
         camera.snap()
     animation = camera.animate(interval=400, repeat=True, repeat_delay=400)
     st.components.v1.html(animation.to_jshtml(), height=400, scrolling=True)
@@ -175,7 +175,7 @@ with st.echo(code_location='below'):
         latitude='usa_state_latitude',
         longitude='usa_state_longitude',
         size=alt.Size('Votes', title='Number of Electors', scale=alt.Scale(range=[100, 2000])),
-        color=alt.value('orange'),
+        color=alt.value('darkred'),
         tooltip=['usa_state', 'electors']).properties(title='United States Electoral College {}'.format(a))
 
     st.altair_chart(alt.layer(background, points))
@@ -195,17 +195,16 @@ with st.echo(code_location='below'):
     table['White'] = table['White'] / 100
     table['zer'] = 0
 
-    sns.set_style("whitegrid")
-    sns.set_context("paper", font_scale=1.4)
-    j = sns.lmplot(x="White", y="percentage20_Donald_Trump", data=table, hue='zer',
-                   palette=sns.color_palette("RdBu", 10), logistic=True, truncate=False, scatter_kws={"s": 1},
-                   legend=False)
-    j.set(title='Trump-2020 on white race')
-    j.set_axis_labels('% of white population', "% votes for Trump")
-    st.pyplot(j)
-    k = sns.lmplot(x="Men", y="percentage20_Donald_Trump", data=table, hue='zer',
-                   palette=sns.color_palette("RdBu", 10), logistic=True, truncate=False, scatter_kws={"s": 1},
-                   legend=False)
-    k.set(title='Trump-2020 on male sex')
-    k.set_axis_labels('% of male population', "% votes for Trump")
-    st.pyplot(k)
+
+    sns.regplot(x="White", y="percentage20_Donald_Trump", data=table, color='darkred', logistic=True, truncate=False,
+                scatter_kws={"s": 1})
+    plt.xlabel('% of white population')
+    plt.ylabel("% votes for Trump")
+    plt.title('Trump-2020 on white race', fontweight='bold')
+    st.pyplot()
+    sns.regplot(x="White", y="percentage20_Donald_Trump", data=table, color='darkred', logistic=True,
+                truncate=False, scatter_kws={"s": 1})
+    plt.xlabel('% of male population')
+    plt.ylabel("% votes for Trump")
+    plt.title('Trump-2020 on male sex', fontweight='bold')
+    st.pyplot()
