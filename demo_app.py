@@ -166,21 +166,14 @@ with st.echo(code_location='below'):
     states = alt.topo_feature(data.us_10m.url, 'states')
     background = alt.Chart(states).mark_geoshape(
         fill='grey',
-        stroke='white'
-    ).properties(
-        width=650,
-        height=400
-    ).project('albersUsa')
+        stroke='white').properties(width=650,height=400).project('albersUsa')
 
     points = alt.Chart(votes).mark_circle().encode(
         latitude='usa_state_latitude',
         longitude='usa_state_longitude',
-        size=alt.Size('Votes', title='Number of Electors', scale=alt.Scale(range=[100, 3600])),
+        size=alt.Size('Votes', title='Number of Electors', scale=alt.Scale(range=[100, 3000])),
         color=alt.value('orange'),
-        tooltip=['usa_state', 'electors']
-    ).properties(
-        title='United States Electoral College'
-    )
+        tooltip=['usa_state', 'electors']).properties(title='United States Electoral College {}'.format(a))
 
     st.altair_chart(background + points)
 
