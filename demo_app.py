@@ -149,7 +149,7 @@ with st.echo(code_location='below'):
     counties = alt.topo_feature(data.us_10m.url, 'counties')
     source = data.unemployment.url
 
-    alt.Chart(counties).mark_geoshape().encode(
+    c=alt.Chart(counties).mark_geoshape().encode(
         color='rate:Q'
     ).transform_lookup(
         lookup='id',
@@ -160,7 +160,7 @@ with st.echo(code_location='below'):
         width=500,
         height=300
     )
-    st.pyplot()
+    st.altair_chart(c)
 
 
 
