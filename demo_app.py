@@ -12,13 +12,16 @@ from vega_datasets import data
 
 from matplotlib.animation import ArtistAnimation
 with st.echo(code_location='below'):
-    st.title("Ну и ну!")
+    st.title("STOP THE COUNT! (c)")
     """
-    Выборы в США: 1976 - 2020
+    Выборы в США: 1976 - 2020.
+    Использованные библиотеки (помимо matplotlib): график 1 - celluloid, график 2 -  seaborn, график 3 - geopandas, следующие графики - altair.
+    Пожалуйста, подождите пока страница полностью загрузится. 
+    
     """
 
     """
-    Немого общей статистики - голоса за демократов и республиканцев:
+    Немyого общей статистики - голоса за демократов и республиканцев в течение 44 лет:
     """
     st.set_option('deprecation.showPyplotGlobalUse', False)
 
@@ -51,9 +54,9 @@ with st.echo(code_location='below'):
         index=['DEMOCRAT', 'REPUBLICAN', "LIBERTARIAN"])
         a.plot.bar(color=['#3d50bd', '#e83933', 'black'])
         plt.xticks(rotation=0, horizontalalignment="center")
-        ax.text(0.08, 1.03, "Votes for three parties in {}".format(year1), transform=ax.transAxes, fontsize=14, fontweight='bold')
+        ax.text(0.2, 1.03, "Votes for three parties in {}".format(year1), transform=ax.transAxes, fontsize=10, fontweight='bold')
         plt.xlabel("", fontsize=12)
-        plt.ylabel("NUMBER OF VOTES", fontsize=12)
+        plt.ylabel("NUMBER OF VOTES", fontsize=10)
         plt.yticks(hhh, vbr)
         camera.snap()
     animation = camera.animate(interval=400, repeat=True, repeat_delay=400)
@@ -63,6 +66,7 @@ with st.echo(code_location='below'):
     """
     
     Теперь наше естественное желание - понять, как каждый штат менял предпочтения за эти годы. Посмотрим!
+    Hint: чтобы не ждать слишком долго, продолжайте выбирать штаты, даже когда экран стал серым. 
     
     """
 
@@ -117,7 +121,7 @@ with st.echo(code_location='below'):
         st.write(f"В {selected_year!r} году больше всего голосов получил(а) " + dict_col[win][1] +
                  " (хотя президентом стал {})".format(prez) + ". Но все же посмотрим, как зовоеывал штаты кандидат, получивший большинство голосов:")
     else:
-        st.write(f"Победил "+ dict_col[win][1]+ " А вот как голосовали штаты (на графике - разница между результатами республиканца и демократа")
+        st.write(f"Победил "+ dict_col[win][1]+ " А вот как голосовали штаты (на графике - разница между результатами республиканца и демократа в процентных пунтках)")
 
     """
      
@@ -156,14 +160,13 @@ with st.echo(code_location='below'):
     df = df.merge(college, left_on='wh', right_on='wh')
 
     votes = votes[votes['Year'] == a]
-    votes['Votes'] = votes['Votes']
     votes['electors'] = votes['Votes']
 
     longlat = pd.read_csv("longlat.csv")
     longlat.drop(['country_code', 'latitude', 'longitude', 'country'], 1)
     votes = votes.merge(longlat, left_on='State', right_on='usa_state')
-
     states = alt.topo_feature(data.us_10m.url, 'states')
+
     background = alt.Chart(states).mark_geoshape(
         fill='grey',
         stroke='white').properties(width=650,height=400).project('albersUsa')
@@ -171,11 +174,38 @@ with st.echo(code_location='below'):
     points = alt.Chart(votes).mark_circle().encode(
         latitude='usa_state_latitude',
         longitude='usa_state_longitude',
-        size=alt.Size('Votes', title='Number of Electors', scale=alt.Scale(range=[100, 3000])),
+        size=alt.Size('Votes', title='Number of Electors', scale=alt.Scale(range=[100, 2000])),
         color=alt.value('orange'),
         tooltip=['usa_state', 'electors']).properties(title='United States Electoral College {}'.format(a))
 
-    st.altair_chart(background + points)
+    st.altair_chart(alt.layer(background, points))
 
+    """
+    
+    Трамп! Ключевой параметр, который мы будем исследовать - разницу между процентными результатами Трампа в каждом округе.
+    
+    Может все дело в ковиде? Посмотрим на связь со смертностью и заболеваемостью. 
 
+    """
 
+    table = pd.read_csv("county_statistics.csv")
+    table['trump-marg-%'] = table["percentage20_Donald_Trump"] - table["percentage16_Donald_Trump"]
+    table['trump-marg-n'] = (table["votes20_Donald_Trump"] - table["votes16_Donald_Trump"]) / (
+    table["votes16_Donald_Trump"])
+    table['White'] = table['White'] / 100
+    table['zer'] = 0
+
+    sns.set_style("whitegrid")
+    sns.set_context("paper", font_scale=1.4)
+    j = sns.lmplot(x="White", y="percentage20_Donald_Trump", data=table, hue='zer',
+                   palette=sns.color_palette("RdBu", 10), logistic=True, truncate=False, scatter_kws={"s": 1},
+                   legend=False)
+    j.set(title='Trump-2020 on white race')
+    j.set_axis_labels('% of white population', "% votes for Trump")
+    st.pyplot(j)
+    k = sns.lmplot(x="Men", y="percentage20_Donald_Trump", data=table, hue='zer',
+                   palette=sns.color_palette("RdBu", 10), logistic=True, truncate=False, scatter_kws={"s": 1},
+                   legend=False)
+    k.set(title='Trump-2020 on male sex')
+    k.set_axis_labels('% of male population', "% votes for Trump")
+    st.pyplot(k)
