@@ -8,3 +8,4 @@ celluloid
 plotly
 altair
 vega_datasets
+statsmodels
