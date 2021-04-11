@@ -182,7 +182,7 @@ with st.echo(code_location='below'):
 
     """
     
-    Трамп! Пока посмотрим на 2020 год.
+    Трамп! Теперь посмотрим на 2020 год.
     Действительно ли за Трампа голосуют скорее те регионы, в которых преобладают белые и мужчины? Похоже на то, вот регрессии:
     
     """
@@ -223,9 +223,8 @@ with st.echo(code_location='below'):
     react = alt.Chart(table).mark_rect().encode(
         alt.X('share of votes for Trump in 2016', bin=True, axis=alt.Axis(format='%', title="Trump's result in 2016")),
         alt.Y('share of votes for Trump in 2020', bin=True, axis=alt.Axis(format='%', title="Trump's result in 2020")),
-        alt.Color("trump-marg-%",
-                  scale=alt.Scale(scheme='redblue', reverse=True),
-                  legend=alt.Legend(title='Margin'))).properties(width=600)
+        alt.Color("trump-marg-%", scale=alt.Scale(scheme='redblue', reverse=True),
+                  legend=alt.Legend(title='Margin',  orient="left"))).properties(width=600)
 
     line = pd.DataFrame({'x': [0, 1], 'y': [0, 1], })
     line_plot = alt.Chart(line).mark_line(color='darkred').encode(x='x', y='y')
@@ -240,3 +239,35 @@ with st.echo(code_location='below'):
                                              ).properties(width=700, height=200).add_selection(pts)
 
     st.altair_chart(alt.vconcat(react + line_plot + circ, bar).resolve_legend(color="independent", size="independent"))
+
+    """
+    Может все дело в ковиде? На следующих графиках стоит поиграться с прямоугольной выборкой (кейсы ковида - данные накануне выборов):
+   
+    """
+
+    table['%Covid in Population'] = table['cases'] / table['TotalPop']
+    table['Democrats: % shift'] = table["percentage20_Joe_Biden"] - table['percentage16_Hillary_Clinton']
+    table['Republicans: % shift']=table['trump-marg-%']
+    table_45 = table[(table['Republicans: % shift'] > -0.1) & (table['Republicans: % shift'] < 0.1)]
+    table_45 = table_45[(table_45['Democrats: % shift'] > -0.1) & (table_45['Democrats: % shift'] < 0.1)]
+    table_45 = table_45[(table_45['%Covid in Population'] < 0.13)]
+    table_45['Income per capita']=table['IncomePerCap']
+    table_45.loc[table_45['percentage20_Joe_Biden'] > table_45['percentage20_Donald_Trump'], 'winner'] = 'DEMOCRAT'
+    table_45.loc[table_45['percentage20_Joe_Biden'] < table_45['percentage20_Donald_Trump'], 'winner'] = 'REPUBLICAN'
+    drug = alt.selection_interval()
+    brush = alt.selection_interval()
+    chart1 = alt.Chart(table_45).mark_point().encode(
+        y='Republicans: % shift',
+        color=alt.condition(drug, alt.Color('winner:N',
+                                             scale=alt.Scale(domain=['DEMOCRAT', 'REPUBLICAN'],
+                                                             range=['blue', 'darkred'])),
+                            alt.value('lightgray'))).properties(width=250, height=250).add_selection(drug)
+    hui = chart1.encode(x='Democrats: % shift') | chart1.encode(x='%Covid in Population') | chart1.encode(x='Income per capita')
+    st.altair_chart(hui)
+
+    """
+    
+    Видимо, ковид вообще не сыграл никакой роли. А еще (судя по всему) не Трамп терял голоса, а Байден активнее мобилизовывал демократический электорат. 
+    
+    """
+    st.subheader("ну, спасибо вам большое за вашу борьбу..")
