@@ -14,10 +14,10 @@ from matplotlib.animation import ArtistAnimation
 with st.echo(code_location='below'):
     st.title("STOP THE COUNT! (c)")
     """
-    Выборы в США: 1976 - 2020.
+    Выборы в США: 1976 - 2020. Пожалуйста, подождите пока страница полностью загрузится.
+    """
+    """
     Использованные библиотеки (помимо matplotlib): график 1 - celluloid, график 2 -  seaborn, график 3 - geopandas, следующие графики - altair.
-    Пожалуйста, подождите пока страница полностью загрузится. 
-    
     """
 
     """
@@ -54,7 +54,7 @@ with st.echo(code_location='below'):
         index=['DEMOCRAT', 'REPUBLICAN', "LIBERTARIAN"])
         a.plot.bar(color=['#3d50bd', 'darkred', 'black'])
         plt.xticks(rotation=0, horizontalalignment="center", fontsize=8)
-        ax.text(0.2, 1.03, "Votes for three parties in {}".format(year1), transform=ax.transAxes, fontsize=8, fontweight='bold')
+        ax.text(0.3, 1.03, "Votes for three parties in {}".format(year1), transform=ax.transAxes, fontsize=8, fontweight='bold')
         plt.xlabel("", fontsize=8)
         plt.ylabel("NUMBER OF VOTES", fontsize=8)
         plt.yticks(hhh, vbr, fontsize=8)
@@ -197,14 +197,16 @@ with st.echo(code_location='below'):
 
 
     sns.regplot(x="White", y="percentage20_Donald_Trump", data=table, color='darkred', logistic=True, truncate=False,
-                scatter_kws={"s": 1})
-    plt.xlabel('% of white population')
-    plt.ylabel("% votes for Trump")
-    plt.title('Trump-2020 on white race', fontweight='bold')
+                scatter_kws={"s": 20})
+    plt.xlabel('% of white population', fontsize=28)
+    plt.ylabel("% votes for Trump",fontsize=28)
+    plt.title('Trump-2020 on white race', fontweight='bold',fontsize=30)
+    plt.tick_params(labelsize=20)
     st.pyplot()
-    sns.regplot(x="White", y="percentage20_Donald_Trump", data=table, color='darkred', logistic=True,
-                truncate=False, scatter_kws={"s": 1})
-    plt.xlabel('% of male population')
-    plt.ylabel("% votes for Trump")
-    plt.title('Trump-2020 on male sex', fontweight='bold')
-    st.pyplot()
+
+    #j=sns.regplot(x="White", y="percentage20_Donald_Trump", data=table, color='darkred', logistic=True,
+  #             truncate=False, scatter_kws={"s": 1})
+   # j.set_xlabel('% of male population')
+    #j.set_ylabel("% votes for Trump")
+   # plt.title('Trump-2020 on male sex', fontweight='bold')
+   # st.pyplot()
