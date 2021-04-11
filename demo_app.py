@@ -17,7 +17,7 @@ with st.echo(code_location='below'):
     Выборы в США: 1976 - 2020. Пожалуйста, подождите пока страница полностью загрузится.
     """
     """
-    Использованные библиотеки (помимо matplotlib): график 1 - celluloid, график 2 -  seaborn, график 3 - geopandas, следующие графики - altair.
+    Использованные библиотеки (помимо matplotlib): график 1 (аниманация) - celluloid, графики 2,4,5 -  seaborn, график 3 - geopandas, остальные графики (интерактивность) - altair.
     """
 
     """
@@ -147,7 +147,7 @@ with st.echo(code_location='below'):
 
     """
     
-    А это график с количеством выборщиков у каждого штата. Если президентом стал не тот кандидат, который набрал большинство голосов, то все дело в этом:
+    А это график с количеством выборщиков у каждого штата. Если президентом стал не тот кандидат, который набрал большинство голосов, то все дело в этом (на кружок можно навести курсор и увидеть название штата и количество выборщиков):
 
     """
     college = pd.read_csv("Electoral_College.csv")
@@ -182,10 +182,9 @@ with st.echo(code_location='below'):
 
     """
     
-    Трамп! Ключевой параметр, который мы будем исследовать - разницу между процентными результатами Трампа в каждом округе.
+    Трамп! Пока посмотрим на 2020 год.
+    Действительно ли за Трампа голосуют скорее те регионы, в которых преобладают белые и мужчины? Похоже на то, вот регрессии:
     
-    Может все дело в ковиде? Посмотрим на связь со смертностью и заболеваемостью. 
-
     """
 
     table = pd.read_csv("county_statistics.csv")
@@ -193,20 +192,51 @@ with st.echo(code_location='below'):
     table['trump-marg-n'] = (table["votes20_Donald_Trump"] - table["votes16_Donald_Trump"]) / (
     table["votes16_Donald_Trump"])
     table['White'] = table['White'] / 100
-    table['zer'] = 0
+    table['Men%']=table['Men']/table['TotalPop']
 
 
     sns.regplot(x="White", y="percentage20_Donald_Trump", data=table, color='darkred', logistic=True, truncate=False,
                 scatter_kws={"s": 20})
-    plt.xlabel('% of white population', fontsize=28)
+    plt.xlabel('% of whites in population', fontsize=28)
     plt.ylabel("% votes for Trump",fontsize=28)
-    plt.title('Trump-2020 on white race', fontweight='bold',fontsize=30)
+    plt.title('Trump-2020 on white race (county-level)', fontweight='bold',fontsize=30)
     plt.tick_params(labelsize=20)
     st.pyplot()
 
-    #j=sns.regplot(x="White", y="percentage20_Donald_Trump", data=table, color='darkred', logistic=True,
-  #             truncate=False, scatter_kws={"s": 1})
-   # j.set_xlabel('% of male population')
-    #j.set_ylabel("% votes for Trump")
-   # plt.title('Trump-2020 on male sex', fontweight='bold')
-   # st.pyplot()
+    sns.regplot(x="Men%", y="percentage20_Donald_Trump", data=table[(table["Men%"]>0.4)&(table["Men%"]<0.6)], color='darkred', logistic=True, truncate=False,
+                scatter_kws={"s": 20})
+    plt.xlabel('% of men in population', fontsize=28)
+    plt.ylabel("% votes for Trump", fontsize=28)
+    plt.title('Trump-2020 on male gender (county-level)', fontweight='bold', fontsize=30)
+    plt.tick_params(labelsize=20)
+    st.pyplot()
+
+    """
+    
+    Теперь ключевой параметр, который мы будем исследовать - разницу между процентными результатами Трампа.
+    Здесь вы можете выбрать штат и посмотреть распределения количества округов в этом штате в зависимости от динамики предпочтений:
+    
+    """
+
+    table['share of votes for Trump in 2016'] = table['percentage16_Donald_Trump']
+    table['share of votes for Trump in 2020'] = table['percentage20_Donald_Trump']
+    react = alt.Chart(table).mark_rect().encode(
+        alt.X('share of votes for Trump in 2016', bin=True, axis=alt.Axis(format='%', title="Trump's result in 2016")),
+        alt.Y('share of votes for Trump in 2020', bin=True, axis=alt.Axis(format='%', title="Trump's result in 2020")),
+        alt.Color("trump-marg-%",
+                  scale=alt.Scale(scheme='redblue', reverse=True),
+                  legend=alt.Legend(title='Margin'))).properties(width=600)
+
+    line = pd.DataFrame({'x': [0, 1], 'y': [0, 1], })
+    line_plot = alt.Chart(line).mark_line(color='darkred').encode(x='x', y='y')
+
+    pts = alt.selection(type="single", encodings=['x'])
+
+    circ = react.mark_point().encode(alt.ColorValue('grey'), alt.Size('count()', legend=alt.Legend(
+        title='Number of counties in selection'))).transform_filter(pts)
+
+    bar = alt.Chart(table).mark_bar().encode(x='state', y='count()',
+                                             color=alt.condition(pts, alt.ColorValue("darkred"), alt.ColorValue("grey"))
+                                             ).properties(width=700, height=200).add_selection(pts)
+
+    st.altair_chart(alt.vconcat(react + line_plot + circ, bar).resolve_legend(color="independent", size="independent"))
