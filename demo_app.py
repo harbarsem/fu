@@ -54,7 +54,7 @@ with st.echo(code_location='below'):
         index=['DEMOCRAT', 'REPUBLICAN', "LIBERTARIAN"])
         a.plot.bar(color=['#3d50bd', 'darkred', 'black'])
         plt.xticks(rotation=0, horizontalalignment="center", fontsize=8)
-        ax.text(0.3, 1.03, "Votes for three parties in {}".format(year1), transform=ax.transAxes, fontsize=8, fontweight='bold')
+        ax.text(0.19, 1.03, "Votes for three parties in {}".format(year1), transform=ax.transAxes, fontsize=10, fontweight='bold')
         plt.xlabel("", fontsize=8)
         plt.ylabel("NUMBER OF VOTES", fontsize=8)
         plt.yticks(hhh, vbr, fontsize=8)
@@ -262,7 +262,7 @@ with st.echo(code_location='below'):
                                              scale=alt.Scale(domain=['DEMOCRAT', 'REPUBLICAN'],
                                                              range=['blue', 'darkred'])),
                             alt.value('lightgray'))).properties(width=250, height=250).add_selection(drug)
-    hui = chart1.encode(x='Democrats: % shift') | chart1.encode(x='%Covid in Population') | chart1.encode(x='Income per capita')
+    hui = chart1.encode(x='Democrats: % shift') | chart1.encode(x='%Covid in Population') & chart1.encode(x='Income per capita')
     st.altair_chart(hui)
 
     """
